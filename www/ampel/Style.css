@@ -1,0 +1,73 @@
+a:link { text-decoration:none; font-weight:bold; color:#000; }
+
+a:visited { text-decoration:none; font-weight:bold; color:#000; }
+
+a:hover { text-decoration:none; font-weight:bold; background-color:#fff; }
+
+a:active { text-decoration:none; font-weight:bold; background-color:#fff; }
+
+a:focus { text-decoration:none; font-weight:bold; background-color:#fff; }
+
+#container {
+    top: 0px;
+    margin: 0 auto;
+    width:1152px ;
+	height:1763px ; 
+    position: relative;
+}
+
+#Ampel1 { 
+    position:absolute; 
+    top:317px; 
+    left:880px; 
+    width:20px; 
+    height:20px;
+    border: 3px solid grey;
+}
+#ContainerAmpel{
+    top: 87px;
+    margin: 0 auto;
+    border: 3px solid grey;
+}
+
+.BildAmpel { 
+    position:absolute;    
+    width:320px; 
+    height:480px;
+    background-color:#ddf; 
+}
+
+.AmpelText { 
+    position:absolute;
+    left:324px; 
+    width:320px; 
+    height: 480px; 
+}
+
+.Ampelzurueck {
+    position:absolute; 
+    top:572px; 
+    left:0px; 
+    width:60px; 
+    height:25px;
+}
+
+div#Karte {
+	width:1152px ;
+	height:1763px ;
+	margin: 0 auto;
+	border: 3px solid grey;
+ }
+ 
+ div#Head {
+    width:483px ;
+    height:87px ;
+    margin: 0 auto;
+ }
+ 
+ div#impre {
+    font-size: 20px; 
+    text-align: center;
+    margin:  0 auto;
+    border: 3px solid grey;
+ }

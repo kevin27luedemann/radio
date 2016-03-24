@@ -1,0 +1,47 @@
+<?php
+echo "<table border=1>";
+echo "<tr>";
+echo	"<th>Nummer</th>";
+echo	"<th>Bildname</th>";
+echo	"<th>Albumname</th>";
+echo	"<th>Bild</th>";
+echo "</tr>";
+$aus = mysql_query("select * from Bild order by bildnr");
+$ausnr = mysql_num_rows($aus);
+$a = 0;
+while($a < $ausnr)
+{
+$ausnum = mysql_result($aus,$a,0);
+$ausnam = mysql_result($aus,$a,1);
+$ausbild = mysql_result($aus,$a,2);
+$ausalbum = mysql_result($aus,$a,3);
+
+
+$ausalb = 	mysql_query("select Albumname from Album where Albumnr = $ausalbum");
+$ausalbunam = 	mysql_result($ausalb,0,0);
+
+
+$dateideco = base64_decode($ausbild);
+
+$a++;
+$location = $a . 'jpg';
+$file = fopen($location, "w+");
+fwrite($file, $dateideco);
+
+
+echo "<tr>";
+echo	"<td>$ausnum</td>";
+echo	"<td>$ausnam</td>";
+echo	"<td>$ausalbunam<td>";
+echo	"<td><img src=\"$location\" width=480 height=360></td>";
+echo "</tr>";
+
+fclose($file);
+
+
+}
+echo "</table>";
+
+
+
+?>
