@@ -148,7 +148,7 @@ int main(int argc, char* argv[]){
 	//update timer starten
 	g_timeout_add(250, update_screen, la_text);
 	//make window Fullscreen
-	//gtk_window_fullscreen(GTK_WINDOW(window));
+	gtk_window_fullscreen(GTK_WINDOW(window));
 	gtk_widget_show_all(window);
 	
 	GdkCursor *mouse;
