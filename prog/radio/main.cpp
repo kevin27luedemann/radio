@@ -1,4 +1,4 @@
-#define demo
+//#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -82,7 +82,7 @@ static gboolean update_trackscreen(gpointer data){
 	//g_print(ausgabe);
 	//g_print("\n");
 	if(ausgabe[0]!='\0'){
-		const char *format = "<span font_desc=\"Sans 14\">\%s</span>";
+		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
 		char *markup;
 
 		markup = g_markup_printf_escaped (format, ausgabe);
@@ -91,7 +91,13 @@ static gboolean update_trackscreen(gpointer data){
 //		gtk_label_set_text(GTK_LABEL(data),ausgabe);
 	}
 	else{
-		gtk_label_set_text(GTK_LABEL(data),"Radio");
+		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
+		char *markup;
+
+		markup = g_markup_printf_escaped (format, "\nRadio\n");
+		gtk_label_set_markup (GTK_LABEL(data), markup);
+		g_free (markup);
+//		gtk_label_set_text(GTK_LABEL(data),"\nRadio\n");
 	}	
 	f.close();
 	return true;
@@ -107,7 +113,7 @@ char* asct(const struct tm *timeptr)
     "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
   };
   static char result[26];
-  sprintf(result, "%.3s %3d.%.3s.%d %.2d:%.2d:%.2d",
+  sprintf(result, "%.2s %3d.%.3s.%d %.2d:%.2d:%.2d",
 	wday_name[timeptr->tm_wday],
 	timeptr->tm_mday,
 	mon_name[timeptr->tm_mon],
@@ -125,7 +131,7 @@ static gboolean update_datescreen(gpointer data){
 	time(&timer);
 	local = localtime(&timer);
 	
-	const char *format = "<span font_desc=\"13\">\%s</span>";
+	const char *format = "<span font_desc=\"19\">\%s</span>";
 	char *markup;
 
 	markup = g_markup_printf_escaped (format, asct(local));
@@ -196,7 +202,7 @@ int main(int argc, char* argv[]){
 					GtkWidget *im_next, *ev_next, *la_next, *vb_next;
 		
 					vb_next = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-					la_next = gtk_label_new("next");
+					la_next = gtk_label_new("Next");
 					im_next = gtk_image_new_from_file(nextstr);
 	
 					gtk_box_pack_start(GTK_BOX(vb_next),im_next,false,true,0);
