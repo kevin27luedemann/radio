@@ -1,5 +1,5 @@
 NAME=main
-CFLAGS=-g -Wall -std=c++11 -o $(NAME)
+CFLAGS=-g -Wall -o $(NAME)
 GTKFLAGS=-export-dynamic `pkg-config --cflags --libs gtk+-3.0`
 SRCS=main.cpp
 CC=g++
