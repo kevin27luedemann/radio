@@ -1,4 +1,4 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -83,7 +83,6 @@ static gboolean update_trackscreen(gpointer data){
 	//g_print("\n");
 	if(ausgabe[0]!='\0'){
 		const char *format = "<span font_desc=\"Sans 14\">\%s</span>";
-
 		char *markup;
 
 		markup = g_markup_printf_escaped (format, ausgabe);
@@ -126,7 +125,13 @@ static gboolean update_datescreen(gpointer data){
 	time(&timer);
 	local = localtime(&timer);
 	
-	gtk_label_set_text(GTK_LABEL(data),asct(local));
+	const char *format = "<span font_desc=\"13\">\%s</span>";
+	char *markup;
+
+	markup = g_markup_printf_escaped (format, asct(local));
+	gtk_label_set_markup (GTK_LABEL(data), markup);
+	g_free (markup);
+//	gtk_label_set_text(GTK_LABEL(data),asct(local));
 	
 	return true;
 }
