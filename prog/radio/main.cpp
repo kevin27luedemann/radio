@@ -1,3 +1,5 @@
+#define demo
+
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <fstream>
@@ -15,31 +17,54 @@
 #define stopstr "/tmp/piradio/stop.jpg"
 #define nextstr "/tmp/piradio/next.jpg"
 */
+#ifndef demo
+
 #define playstr "/usr/bin/piradio/play.jpg"
 #define stopstr "/usr/bin/piradio/stop.jpg"
 #define nextstr "/usr/bin/piradio/next.jpg"
 
+#else
+
+#define playstr "play.jpg"
+#define stopstr "stop.jpg"
+#define nextstr "next.jpg"
+
+#endif
+
+
 static void button_play(GtkWidget *widget, gpointer data){
+#ifndef demo
 	system("mpc play");
-//	system("echo Play");	
+#else
+	system("echo Play");	
+#endif
 }	
 static void button_stop(GtkWidget *widget, gpointer data){
+#ifndef demo
 	system("mpc stop");
-//	system("echo stop");
+#else
+	system("echo stop");
+#endif
 }
 static void button_next(GtkWidget *widget, gpointer data){
+#ifndef demo
 	system("mpc next");
-//	system("echo next");
+#else
+	system("echo next");
+#endif
 }
 
 
 static gboolean update_screen(gpointer data){
+#ifndef demo
 	system("mpc current > /tmp/piradio/stat.txt");
+#endif
 	std::ifstream f;
 	f.open("/tmp/piradio/stat.txt");
 	char buffer[128];
 	char ausgabe[128];
 	int i = 0;
+	
 	while(!f.eof()){
 		f >> buffer[i];
 		if(buffer[i]==':' || buffer[i]=='|'){
@@ -50,14 +75,21 @@ static gboolean update_screen(gpointer data){
 		}
 		i++;
 	}
-	i--;
-	for (int j=i;j<128;j++){
+
+	for (int j=i-1;j<128;j++){
 		ausgabe[j]='\0';
 	}
 	//g_print(ausgabe);
 	//g_print("\n");
 	if(ausgabe[0]!='\0'){
-		gtk_label_set_text(GTK_LABEL(data),ausgabe);
+		const char *format = "<span font_desc=\"Sans 14\">\%s</span>";
+
+		char *markup;
+
+		markup = g_markup_printf_escaped (format, ausgabe);
+		gtk_label_set_markup (GTK_LABEL(data), markup);
+		g_free (markup);
+//		gtk_label_set_text(GTK_LABEL(data),ausgabe);
 	}
 	else{
 		gtk_label_set_text(GTK_LABEL(data),"Radio");
@@ -67,93 +99,104 @@ static gboolean update_screen(gpointer data){
 }
 
 int main(int argc, char* argv[]){
-
+#ifndef demo
 	system("mpc volume 90");
+#endif
 	system("mkdir -p /tmp/piradio");
 	system("echo test > /tmp/piradio/stat.txt");
 
 	gtk_init(&argc,&argv);
 	
-	//Hauptfenster einstellungen	
-	GtkWidget *window;
-	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_widget_set_size_request(window,width,hight);
-	gtk_window_set_resizable(GTK_WINDOW(window),false);
-	g_signal_connect(window,"delete-event",G_CALLBACK(gtk_main_quit),NULL);
-	//fuer spaeter
-	//gtk_window_set_decorated(GTK_WINDOW(window),false);
+		//Hauptfenster einstellungen	
+		GtkWidget *window;
+		window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+		gtk_widget_set_size_request(window,width,hight);
+		gtk_window_set_resizable(GTK_WINDOW(window),false);
+		g_signal_connect(window,"delete-event",G_CALLBACK(gtk_main_quit),NULL);
+	#ifdef demo
+		gtk_window_set_decorated(GTK_WINDOW(window),false);
+	#endif
+
+			//Layout erstellen
+			GtkWidget *cont;
+			cont = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
 		
-	GtkWidget *la_text;
-	la_text = gtk_label_new("dummy sender");
-	
-	//Layout horizontal fuer die Buttons
-	GtkWidget *hbox;
-	hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
+				//Layout horizontal for the Buttons
+				GtkWidget *hbox;
+				hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL,0);
 
-	//Image Button for play
-	GtkWidget *im_play, *ev_play, *la_play, *vb_play;
-
-	vb_play = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-	la_play = gtk_label_new("Play");
-	im_play = gtk_image_new_from_file(playstr);
-
-	gtk_box_pack_start(GTK_BOX(vb_play),im_play,true,true,0);
-	gtk_box_pack_start(GTK_BOX(vb_play),la_play,false,true,0);
-
-	ev_play = gtk_event_box_new();
-	gtk_container_add(GTK_CONTAINER(ev_play),vb_play);
-	g_signal_connect(G_OBJECT(ev_play),"button-press-event",G_CALLBACK(button_play),NULL);
-
-	//Image Button for stop
-	GtkWidget *im_stop, *ev_stop, *la_stop, *vb_stop;
+					//Image Button for play
+					GtkWidget *im_play, *ev_play, *la_play, *vb_play;
 	
-	vb_stop = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-	la_stop = gtk_label_new("Stop");
-	im_stop = gtk_image_new_from_file(stopstr);
+					vb_play = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+					la_play = gtk_label_new("Play");
+					im_play = gtk_image_new_from_file(playstr);
 	
-	gtk_box_pack_start(GTK_BOX(vb_stop),im_stop,true,true,0);
-	gtk_box_pack_start(GTK_BOX(vb_stop),la_stop,false,false,0);
+					gtk_box_pack_start(GTK_BOX(vb_play),im_play,false,true,0);
+					gtk_box_pack_start(GTK_BOX(vb_play),la_play,false,false,0);
+	
+					ev_play = gtk_event_box_new();
+					gtk_container_add(GTK_CONTAINER(ev_play),vb_play);
+					g_signal_connect(G_OBJECT(ev_play),"button-press-event",G_CALLBACK(button_play),NULL);
+	
+					//Image Button for stop
+					GtkWidget *im_stop, *ev_stop, *la_stop, *vb_stop;
+						
+					vb_stop = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+					la_stop = gtk_label_new("Stop");
+					im_stop = gtk_image_new_from_file(stopstr);
+		
+					gtk_box_pack_start(GTK_BOX(vb_stop),im_stop,false,true,0);
+					gtk_box_pack_start(GTK_BOX(vb_stop),la_stop,false,false,0);
+	
+					ev_stop = gtk_event_box_new();
+					gtk_container_add(GTK_CONTAINER(ev_stop),vb_stop);
+					g_signal_connect(G_OBJECT(ev_stop),"button-press-event",G_CALLBACK(button_stop),NULL);
+		
+					//Image Button for next
+					GtkWidget *im_next, *ev_next, *la_next, *vb_next;
+		
+					vb_next = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
+					la_next = gtk_label_new("next");
+					im_next = gtk_image_new_from_file(nextstr);
+	
+					gtk_box_pack_start(GTK_BOX(vb_next),im_next,false,true,0);
+					gtk_box_pack_start(GTK_BOX(vb_next),la_next,false,false,0);
+		
+					ev_next = gtk_event_box_new();
+					gtk_container_add(GTK_CONTAINER(ev_next),vb_next);
+					g_signal_connect(G_OBJECT(ev_next),"button-press-event",G_CALLBACK(button_next),NULL);
+					
+				//Layout der Bottons einbauen
+				gtk_box_pack_start(GTK_BOX(hbox),ev_play,true,true,0);
+				gtk_box_pack_start(GTK_BOX(hbox),ev_stop,true,true,0);
+				gtk_box_pack_start(GTK_BOX(hbox),ev_next,true,true,0);
+				
+				//Label for showing the text
+				GtkWidget *la_text;
+				la_text = gtk_label_new("dummy sender");
 
-	ev_stop = gtk_event_box_new();
-	gtk_container_add(GTK_CONTAINER(ev_stop),vb_stop);
-	g_signal_connect(G_OBJECT(ev_stop),"button-press-event",G_CALLBACK(button_stop),NULL);
-	
-	//Image Button for next
-	GtkWidget *im_next, *ev_next, *la_next, *vb_next;
-	
-	vb_next = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-	la_next = gtk_label_new("next");
-	im_next = gtk_image_new_from_file(nextstr);
-	
-	gtk_box_pack_start(GTK_BOX(vb_next),im_next,true,true,0);
-	gtk_box_pack_start(GTK_BOX(vb_next),la_next,false,false,0);
+			//layout to total Box for window
+			gtk_box_pack_start(GTK_BOX(cont),la_text,true,true,0);
+			gtk_box_pack_start(GTK_BOX(cont),hbox,true,true,0);
 
-	ev_next = gtk_event_box_new();
-	gtk_container_add(GTK_CONTAINER(ev_next),vb_next);
-	g_signal_connect(G_OBJECT(ev_next),"button-press-event",G_CALLBACK(button_next),NULL);
+		//add container to window
+		gtk_container_add(GTK_CONTAINER(window),cont);
 	
-	//Layout der Bottons einbauen
-	gtk_box_pack_start(GTK_BOX(hbox),ev_play,true,true,0);
-	gtk_box_pack_start(GTK_BOX(hbox),ev_stop,true,true,0);
-	gtk_box_pack_start(GTK_BOX(hbox),ev_next,true,true,0);
+		//update timer starten
+		g_timeout_add(250, update_screen, la_text);
 
-	//Layout erstellen
-	GtkWidget *cont;
-	cont = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-	gtk_box_pack_start(GTK_BOX(cont),hbox,true,true,0);
-	gtk_box_pack_start(GTK_BOX(cont),la_text,true,true,0);
-	
-	gtk_container_add(GTK_CONTAINER(window),cont);
+		//make window Fullscreen
+	#ifdef demo
+		gtk_window_fullscreen(GTK_WINDOW(window));
+	#endif
+		gtk_widget_show_all(window);
 
-	//update timer starten
-	g_timeout_add(250, update_screen, la_text);
-	//make window Fullscreen
-	gtk_window_fullscreen(GTK_WINDOW(window));
-	gtk_widget_show_all(window);
-	
-	GdkCursor *mouse;
-	mouse = gdk_cursor_new(GDK_BLANK_CURSOR);
-	gdk_window_set_cursor(gtk_widget_get_window(window),mouse);	
+	#ifndef demo	
+		GdkCursor *mouse;
+		mouse = gdk_cursor_new(GDK_BLANK_CURSOR);
+		gdk_window_set_cursor(gtk_widget_get_window(window),mouse);	
+	#endif
 
 	gtk_main();
 	return 0;
