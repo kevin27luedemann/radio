@@ -1,4 +1,4 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -55,7 +55,7 @@ static void button_next(GtkWidget *widget, gpointer data){
 }
 
 
-static gboolean update_screen(gpointer data){
+static gboolean update_trackscreen(gpointer data){
 #ifndef demo
 	system("mpc current > /tmp/piradio/stat.txt");
 #endif
@@ -98,9 +98,43 @@ static gboolean update_screen(gpointer data){
 	return true;
 }
 
+char* asct(const struct tm *timeptr)
+{
+  static const char wday_name[][4] = {
+    "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"
+  };
+  static const char mon_name[][4] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
+  };
+  static char result[26];
+  sprintf(result, "%.3s %3d.%.3s.%d %.2d:%.2d:%.2d",
+	wday_name[timeptr->tm_wday],
+	timeptr->tm_mday,
+	mon_name[timeptr->tm_mon],
+	1900 + timeptr->tm_year,
+	timeptr->tm_hour,
+	timeptr->tm_min, 
+	timeptr->tm_sec);
+  return result;
+}
+
+
+static gboolean update_datescreen(gpointer data){
+	time_t timer;
+	struct tm *local;
+	time(&timer);
+	local = localtime(&timer);
+	
+	gtk_label_set_text(GTK_LABEL(data),asct(local));
+	
+	return true;
+}
+
 int main(int argc, char* argv[]){
 #ifndef demo
-	system("mpc volume 90");
+	system("mpc volume 90");	//set volume to best value
+	system("mpc repeat");		//turn repeating on
 #endif
 	system("mkdir -p /tmp/piradio");
 	system("echo test > /tmp/piradio/stat.txt");
@@ -175,16 +209,23 @@ int main(int argc, char* argv[]){
 				//Label for showing the text
 				GtkWidget *la_text;
 				la_text = gtk_label_new("dummy sender");
+				
+				//Label for showing the date
+				GtkWidget *la_date;
+				la_date = gtk_label_new("03.04.2016 13:34:35");
 
 			//layout to total Box for window
+			gtk_box_pack_start(GTK_BOX(cont),la_date,false,true,0);
 			gtk_box_pack_start(GTK_BOX(cont),la_text,true,true,0);
 			gtk_box_pack_start(GTK_BOX(cont),hbox,true,true,0);
 
 		//add container to window
+		gtk_box_pack_start(GTK_BOX(cont),la_text,true,true,0);
 		gtk_container_add(GTK_CONTAINER(window),cont);
 	
 		//update timer starten
-		g_timeout_add(250, update_screen, la_text);
+		g_timeout_add(250, update_trackscreen,(gpointer) la_text);
+		g_timeout_add(1000, update_datescreen,(gpointer) la_date);
 
 		//make window Fullscreen
 	#ifdef demo
