@@ -1,4 +1,4 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -34,9 +34,10 @@
 
 static void button_play(GtkWidget *widget, gpointer data){
 #ifndef demo
-	system("mpc play");
+	//system("mpc play");
+	system("/usr/scripte/wetter.sh radio");
 #else
-	system("echo Play");	
+	system("/usr/scripte/wetter.sh");	
 #endif
 }	
 static void button_stop(GtkWidget *widget, gpointer data){
