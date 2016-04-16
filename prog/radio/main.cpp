@@ -7,28 +7,15 @@
 
 #define width 320
 #define hight 240
-/*
-#define playstr "/home/pi/prog/radio/play.jpg"
-#define stopstr "/home/pi/prog/radio/stop.jpg"
-#define nextstr "/home/pi/prog/radio/next.jpg"
-*/
-/*
-#define playstr "/tmp/piradio/play.jpg"
-#define stopstr "/tmp/piradio/stop.jpg"
-#define nextstr "/tmp/piradio/next.jpg"
-*/
+
 #ifndef demo
-
-#define playstr "/usr/bin/piradio/play.jpg"
-#define stopstr "/usr/bin/piradio/stop.jpg"
-#define nextstr "/usr/bin/piradio/next.jpg"
-
+	#define playstr "/usr/bin/piradio/play.jpg"
+	#define stopstr "/usr/bin/piradio/stop.jpg"
+	#define nextstr "/usr/bin/piradio/next.jpg"
 #else
-
-#define playstr "play.jpg"
-#define stopstr "stop.jpg"
-#define nextstr "next.jpg"
-
+	#define playstr "./ress/play.jpg"
+	#define stopstr "./ress/stop.jpg"
+	#define nextstr "./ress/next.jpg"
 #endif
 
 
