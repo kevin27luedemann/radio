@@ -3,8 +3,8 @@
 make;
 mv main radio;
 mkdir -p /usr/bin/piradio/;
-cp -p *.jpg /usr/bin/piradio/;
-cp -p *.png /usr/bin/piradio/;
+cp -p ./ress/*.jpg /usr/bin/piradio/;
+cp -p ./ress/*.png /usr/bin/piradio/;
 cp radio /usr/bin/;
 mkdir -p /tmp/piradio/
 chmod 777 /tmp/piradio/
