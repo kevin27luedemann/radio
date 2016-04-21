@@ -1,0 +1,1 @@
+https://github.com/technion/lol_dht22.git
