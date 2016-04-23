@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <fstream>
 #include <time.h>
+#include <wiringPi.h>
 
 #define width 320
 #define hight 240
@@ -113,6 +114,8 @@ char* asct(const struct tm *timeptr)
   return result;
 }
 
+#define BACKLIGHT 	508
+#define BUTTONBACKLIGHT	17
 
 static gboolean update_datescreen(gpointer data){
 	time_t timer;
@@ -126,12 +129,25 @@ static gboolean update_datescreen(gpointer data){
 	markup = g_markup_printf_escaped (format, asct(local));
 	gtk_label_set_markup (GTK_LABEL(data), markup);
 	g_free (markup);
-//	gtk_label_set_text(GTK_LABEL(data),asct(local));
+
+	//setting Backlinght on or of if necessery
+	if (digitalRead(BUTTONBACKLIGHT) && digitalRead(BACKLIGHT)){
+		digitalWrite(BACKLIGHT,LOW);
+	}
+	else if (digitalRead(BUTTONBACKLIGHT) && !digitalRead(BACKLIGHT)){
+		digitalWrite(BACKLIGHT,HIGH);
+	}
 	
 	return true;
 }
 
 int main(int argc, char* argv[]){
+
+//start using Backlight testing
+	wiringPiSetup ();
+	pinMode (BACKLIGHT, OUTPUT);
+	pinMode (BUTTONBACKLIGHT, INPUT);
+
 #ifndef demo
 	system("mpc volume 90");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
