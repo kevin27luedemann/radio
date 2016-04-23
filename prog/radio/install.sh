@@ -16,6 +16,6 @@ chmod 777 /tmp/piradio/stat.txt;
 mkdir -p /usr/scripte/;
 cp -p ../TTS/pico/sprich.sh /usr/scripte/;
 chmod 555 /usr/scripte/sprich.sh;
-cp -P ../TTS/pico/wetter.sh /usr/scripte/;
+cp -P ../TTS/pico/wetter.sh /usr/scripte/wetter.sh
 chmod 555 /usr/scripte/wetter.sh;
 #radio

@@ -2,12 +2,18 @@
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
+#include <iostream>
 #include <fstream>
 #include <time.h>
 #include <wiringPi.h>
 
 #define width 320
 #define hight 240
+
+#define BUTTONBACKLIGHT 17
+#define BACKLIGHTAUS()  system("sudo sh -c 'echo '0' > /sys/class/gpio/gpio508/value'");
+#define BACKLIGHTAN()   system("sudo sh -c 'echo '1' > /sys/class/gpio/gpio508/value'");
+bool LICHTAN;
 
 #ifndef demo
 	#define playstr "/usr/bin/piradio/play.jpg"
@@ -19,137 +25,30 @@
 	#define nextstr "./ress/next.jpg"
 #endif
 
+static void button_play(GtkWidget *widget, gpointer data);
+static void button_stop(GtkWidget *widget, gpointer data);
+static void button_next(GtkWidget *widget, gpointer data);
 
-static void button_play(GtkWidget *widget, gpointer data){
-#ifndef demo
-	//system("mpc play");
-	system("/usr/scripte/wetter.sh radio");
-#else
-	system("/usr/scripte/wetter.sh");	
-	system("echo play");
-#endif
-}	
-static void button_stop(GtkWidget *widget, gpointer data){
-#ifndef demo
-	system("mpc stop");
-#else
-	system("echo stop");
-#endif
-}
-static void button_next(GtkWidget *widget, gpointer data){
-#ifndef demo
-	system("mpc next");
-#else
-	system("echo next");
-#endif
-}
+static gboolean update_trackscreen(gpointer data);
+static gboolean update_datescreen(gpointer data);
 
 
-static gboolean update_trackscreen(gpointer data){
-#ifndef demo
-	system("mpc current > /tmp/piradio/stat.txt");
-#endif
-	std::ifstream f;
-	f.open("/tmp/piradio/stat.txt");
-	char buffer[128];
-	char ausgabe[128];
-	int i = 0;
-	
-	while(!f.eof()){
-		f >> buffer[i];
-		if(buffer[i]==':' || buffer[i]=='|'){
-			ausgabe[i]='\n';
-		}
-		else{
-			ausgabe[i]=buffer[i];
-		}
-		i++;
-	}
+char* asct(const struct tm *timeptr);
 
-	for (int j=i-1;j<128;j++){
-		ausgabe[j]='\0';
-	}
-	//g_print(ausgabe);
-	//g_print("\n");
-	if(ausgabe[0]!='\0'){
-		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
-		char *markup;
-
-		markup = g_markup_printf_escaped (format, ausgabe);
-		gtk_label_set_markup (GTK_LABEL(data), markup);
-		g_free (markup);
-//		gtk_label_set_text(GTK_LABEL(data),ausgabe);
-	}
-	else{
-		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
-		char *markup;
-
-		markup = g_markup_printf_escaped (format, "\nRadio\n");
-		gtk_label_set_markup (GTK_LABEL(data), markup);
-		g_free (markup);
-//		gtk_label_set_text(GTK_LABEL(data),"\nRadio\n");
-	}	
-	f.close();
-	return true;
-}
-
-char* asct(const struct tm *timeptr)
+int main(int argc, char* argv[])
 {
-  static const char wday_name[][4] = {
-    "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"
-  };
-  static const char mon_name[][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-    "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
-  };
-  static char result[26];
-  sprintf(result, "%.2s %3d.%.3s.%d %.2d:%.2d:%.2d",
-	wday_name[timeptr->tm_wday],
-	timeptr->tm_mday,
-	mon_name[timeptr->tm_mon],
-	1900 + timeptr->tm_year,
-	timeptr->tm_hour,
-	timeptr->tm_min, 
-	timeptr->tm_sec);
-  return result;
-}
 
-#define BACKLIGHT 	508
-#define BUTTONBACKLIGHT	17
-
-static gboolean update_datescreen(gpointer data){
-	time_t timer;
-	struct tm *local;
-	time(&timer);
-	local = localtime(&timer);
-	
-	const char *format = "<span font_desc=\"19\">\%s</span>";
-	char *markup;
-
-	markup = g_markup_printf_escaped (format, asct(local));
-	gtk_label_set_markup (GTK_LABEL(data), markup);
-	g_free (markup);
-
-	//setting Backlinght on or of if necessery
-	if (digitalRead(BUTTONBACKLIGHT) && digitalRead(BACKLIGHT)){
-		digitalWrite(BACKLIGHT,LOW);
-	}
-	else if (digitalRead(BUTTONBACKLIGHT) && !digitalRead(BACKLIGHT)){
-		digitalWrite(BACKLIGHT,HIGH);
-	}
-	
-	return true;
-}
-
-int main(int argc, char* argv[]){
-
-//start using Backlight testing
-	wiringPiSetup ();
-	pinMode (BACKLIGHT, OUTPUT);
+	//start using Backlight and turning it on
+	wiringPiSetupGpio();
 	pinMode (BUTTONBACKLIGHT, INPUT);
+	pullUpDnControl(BUTTONBACKLIGHT,PUD_UP);
+	system("sh -c 'echo 508 > /sys/class/gpio/export'");
+	system("sudo sh -c 'echo 'out' > /sys/class/gpio/gpio508/direction'");
+	BACKLIGHTAN();
+	LICHTAN = true;
 
 #ifndef demo
-	system("mpc volume 90");	//set volume to best value
+	system("mpc volume 83");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
 #endif
 	system("mkdir -p /tmp/piradio");
@@ -245,7 +144,7 @@ int main(int argc, char* argv[]){
 
 		//make window Fullscreen
 	#ifdef demo
-		gtk_window_fullscreen(GTK_WINDOW(window));
+		//gtk_window_fullscreen(GTK_WINDOW(window));
 	#endif
 		gtk_widget_show_all(window);
 
@@ -257,4 +156,125 @@ int main(int argc, char* argv[]){
 
 	gtk_main();
 	return 0;
+}
+
+//Buttons
+static void button_play(GtkWidget *widget, gpointer data){
+#ifndef demo
+	//system("mpc play");
+	system("/usr/scripte/wetter.sh radio");
+#else
+	system("/usr/scripte/wetter.sh");	
+	system("echo play");
+#endif
+}	
+static void button_stop(GtkWidget *widget, gpointer data){
+#ifndef demo
+	system("mpc stop");
+#else
+	system("echo stop");
+#endif
+}
+static void button_next(GtkWidget *widget, gpointer data){
+#ifndef demo
+	system("mpc next");
+#else
+	system("echo next");
+#endif
+}
+
+//Screenupdate funktion
+static gboolean update_trackscreen(gpointer data){
+#ifndef demo
+	system("mpc current > /tmp/piradio/stat.txt");
+	//check for light button
+	if(!digitalRead(BUTTONBACKLIGHT) && LICHTAN ){
+		BACKLIGHTAUS();
+		LICHTAN = false;
+	}
+	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN ){
+		BACKLIGHTAN();
+		LICHTAN = true;
+	}
+#endif
+	std::ifstream f;
+	f.open("/tmp/piradio/stat.txt");
+	char buffer[128];
+	char ausgabe[128];
+	int i = 0;
+	
+	while(!f.eof()){
+		f >> buffer[i];
+		if(buffer[i]==':' || buffer[i]=='|'){
+			ausgabe[i]='\n';
+		}
+		else{
+			ausgabe[i]=buffer[i];
+		}
+		i++;
+	}
+
+	for (int j=i-1;j<128;j++){
+		ausgabe[j]='\0';
+	}
+	//g_print(ausgabe);
+	//g_print("\n");
+	if(ausgabe[0]!='\0'){
+		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
+		char *markup;
+
+		markup = g_markup_printf_escaped (format, ausgabe);
+		gtk_label_set_markup (GTK_LABEL(data), markup);
+		g_free (markup);
+//		gtk_label_set_text(GTK_LABEL(data),ausgabe);
+	}
+	else{
+		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
+		char *markup;
+
+		markup = g_markup_printf_escaped (format, "\nRadio\n");
+		gtk_label_set_markup (GTK_LABEL(data), markup);
+		g_free (markup);
+//		gtk_label_set_text(GTK_LABEL(data),"\nRadio\n");
+	}	
+	f.close();
+	return true;
+}
+static gboolean update_datescreen(gpointer data){
+	time_t timer;
+	struct tm *local;
+	time(&timer);
+	local = localtime(&timer);
+	
+	const char *format = "<span font_desc=\"18\">\%s</span>";
+	char *markup;
+
+	markup = g_markup_printf_escaped (format, asct(local));
+	gtk_label_set_markup (GTK_LABEL(data), markup);
+	g_free (markup);
+	
+	return true;
+}
+
+
+//hilfsfunktionen
+char* asct(const struct tm *timeptr)
+{
+  static const char wday_name[][4] = {
+    "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"
+  };
+  static const char mon_name[][4] = {
+    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
+  };
+  static char result[26];
+  sprintf(result, "%.2s %3d.%.3s.%d %.2d:%.2d:%.2d",
+	wday_name[timeptr->tm_wday],
+	timeptr->tm_mday,
+	mon_name[timeptr->tm_mon],
+	1900 + timeptr->tm_year,
+	timeptr->tm_hour,
+	timeptr->tm_min, 
+	timeptr->tm_sec);
+  return result;
 }
