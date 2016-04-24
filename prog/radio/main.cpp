@@ -52,6 +52,7 @@ int main(int argc, char* argv[])
 	system("mpc repeat");		//turn repeating on
 #endif
 	system("mkdir -p /tmp/piradio");
+	system("chmod 777 /tmp/piradio");
 	system("echo test > /tmp/piradio/stat.txt");
 
 	gtk_init(&argc,&argv);
@@ -161,8 +162,20 @@ int main(int argc, char* argv[])
 //Buttons
 static void button_play(GtkWidget *widget, gpointer data){
 #ifndef demo
-	//system("mpc play");
-	system("/usr/scripte/wetter.sh radio");
+	system("mpc status | grep \"playing\" > /tmp/piradio/testplay.txt ");
+	FILE *file;
+	char *buffer;
+	buffer = (char *) malloc(sizeof(char));
+	buffer[0]=' ';
+	file = fopen("/tmp/piradio/testplay.txt", "r");
+	fread(buffer, 1, 1, file);
+	if(buffer[0] == '['){
+		system("mpc stop");
+	}
+	else{
+		system("/usr/scripte/wetter.sh radio");
+	}
+	fclose(file);
 #else
 	system("/usr/scripte/wetter.sh");	
 	system("echo play");
