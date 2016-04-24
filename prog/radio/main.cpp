@@ -2,7 +2,7 @@
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
-#include <iostream>
+#include <stdio.h>
 #include <fstream>
 #include <time.h>
 #include <wiringPi.h>
@@ -206,47 +206,45 @@ static bool pressed = false;
 		LICHTAN = true;
 	}
 #endif
-	std::ifstream f;
-	f.open("/tmp/piradio/stat.txt");
-	char buffer[128];
-	char ausgabe[128];
-	int i = 0;
-	
-	while(!f.eof()){
-		f >> buffer[i];
-		if(buffer[i]==':' || buffer[i]=='|'){
-			ausgabe[i]='\n';
+	FILE *file;
+	long filesize;
+	file = fopen("/tmp/piradio/stat.txt", "r");
+	if (file != NULL){
+		fseek(file, 0, SEEK_END);
+		filesize = ftell(file);
+		rewind(file);
+		char *buffer;
+		buffer = (char *) malloc(sizeof(char)*filesize);
+		buffer[0]='\0';
+		fread(buffer, 1, filesize, file);
+		for(int i=0; i<filesize; i++){
+			if(buffer[i]=='|' || buffer[i]==':'){
+				buffer[i]='\n';
+			}
+		}
+		buffer[filesize-1]='\0';
+		buffer[filesize-2]='\0';
+
+		if(buffer[0]!='\0'){
+			const char *format = "<span font_desc=\"Sans 12\">\%s</span>";
+			char *markup;
+			markup = g_markup_printf_escaped (format, buffer);
+			gtk_label_set_markup (GTK_LABEL(data), markup);
+			g_free (markup);
+			fclose(file);
+			free(buffer);
 		}
 		else{
-			ausgabe[i]=buffer[i];
+			const char *format = "<span font_desc=\"Sans 12\">\%s</span>";
+			char *markup;
+			markup = g_markup_printf_escaped (format, "\nRadio\n");
+			gtk_label_set_markup (GTK_LABEL(data), markup);
+			g_free (markup);
 		}
-		i++;
-	}
-
-	for (int j=i-1;j<128;j++){
-		ausgabe[j]='\0';
-	}
-	//g_print(ausgabe);
-	//g_print("\n");
-	if(ausgabe[0]!='\0'){
-		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
-		char *markup;
-
-		markup = g_markup_printf_escaped (format, ausgabe);
-		gtk_label_set_markup (GTK_LABEL(data), markup);
-		g_free (markup);
-//		gtk_label_set_text(GTK_LABEL(data),ausgabe);
 	}
 	else{
-		const char *format = "<span font_desc=\"Sans 13\">\%s</span>";
-		char *markup;
-
-		markup = g_markup_printf_escaped (format, "\nRadio\n");
-		gtk_label_set_markup (GTK_LABEL(data), markup);
-		g_free (markup);
-//		gtk_label_set_text(GTK_LABEL(data),"\nRadio\n");
-	}	
-	f.close();
+		printf("Fehler mit stat.txt\n");
+	}
 	return true;
 }
 static gboolean update_datescreen(gpointer data){
