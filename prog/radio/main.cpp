@@ -79,7 +79,7 @@ int main(int argc, char* argv[])
 					GtkWidget *im_play, *ev_play, *la_play, *vb_play;
 	
 					vb_play = gtk_box_new(GTK_ORIENTATION_VERTICAL,0);
-					la_play = gtk_label_new("Play");
+					la_play = gtk_label_new("Play|Stop");
 					im_play = gtk_image_new_from_file(playstr);
 	
 					gtk_box_pack_start(GTK_BOX(vb_play),im_play,false,true,0);
