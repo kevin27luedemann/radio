@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
 	wiringPiSetupGpio();
 	pinMode (BUTTONBACKLIGHT, INPUT);
 	pullUpDnControl(BUTTONBACKLIGHT,PUD_UP);
-	system("sh -c 'echo 508 > /sys/class/gpio/export'");
+	system("sudo sh -c 'echo 508 > /sys/class/gpio/export'");
 	system("sudo sh -c 'echo 'out' > /sys/class/gpio/gpio508/direction'");
 	BACKLIGHTAN();
 	LICHTAN = true;
@@ -198,7 +198,7 @@ static void button_next(GtkWidget *widget, gpointer data){
 
 //Screenupdate funktion
 static gboolean update_trackscreen(gpointer data){
-static bool pressed = false;
+	static bool pressed = false;
 #ifndef demo
 	system("mpc current > /tmp/piradio/stat.txt");
 	//check for light button
@@ -243,8 +243,6 @@ static bool pressed = false;
 			markup = g_markup_printf_escaped (format, buffer);
 			gtk_label_set_markup (GTK_LABEL(data), markup);
 			g_free (markup);
-			fclose(file);
-			free(buffer);
 		}
 		else{
 			const char *format = "<span font_desc=\"Sans 12\">\%s</span>";
@@ -253,6 +251,8 @@ static bool pressed = false;
 			gtk_label_set_markup (GTK_LABEL(data), markup);
 			g_free (markup);
 		}
+		fclose(file);
+		free(buffer);
 	}
 	else{
 		printf("Fehler mit stat.txt\n");
