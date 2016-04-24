@@ -7,6 +7,7 @@ fi
 
 # grundlegende Zeitvariablen
 stunde=`date +"%H"`
+stunde=6
 minute=`date +"%M"`
 heute=`date +"%e.%b.%Y"`
 #stunde=5
@@ -68,7 +69,7 @@ fi
 # Wetterdaten aus der URL holen und
 if [ $stunde -ge 5 ] && [ $stunde -le 9 ] && [ $unkorreliertezufallszahl -lt 99 ] && [ $unkorreliertezufallszahl -ge 1 ]; then
 	wget --directory-prefix=/tmp/ -q http://www.wetter.com/deutschland/goettingen/weende/DE0003197029.html
-	wettertext="`cat /tmp/DE0010191.html | awk '/In Weende/ {print $0}' | head -1`"
+	wettertext="`cat /tmp/DE0003197029.html | awk '/In Weende/ {print $0}' | head -1`"
 	rm -f /tmp/DE0010191.html
 	wettertext=`echo Das Wetter: ${wettertext:1:-6}`
 fi
