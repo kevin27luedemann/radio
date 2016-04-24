@@ -139,12 +139,12 @@ int main(int argc, char* argv[])
 		gtk_container_add(GTK_CONTAINER(window),cont);
 	
 		//update timer starten
-		g_timeout_add(250, update_trackscreen,(gpointer) la_text);
+		g_timeout_add(100, update_trackscreen,(gpointer) la_text);
 		g_timeout_add(1000, update_datescreen,(gpointer) la_date);
 
 		//make window Fullscreen
 	#ifdef demo
-		//gtk_window_fullscreen(GTK_WINDOW(window));
+		gtk_window_fullscreen(GTK_WINDOW(window));
 	#endif
 		gtk_widget_show_all(window);
 
@@ -185,14 +185,23 @@ static void button_next(GtkWidget *widget, gpointer data){
 
 //Screenupdate funktion
 static gboolean update_trackscreen(gpointer data){
+static bool pressed = false;
 #ifndef demo
 	system("mpc current > /tmp/piradio/stat.txt");
 	//check for light button
-	if(!digitalRead(BUTTONBACKLIGHT) && LICHTAN ){
+	if(!digitalRead(BUTTONBACKLIGHT) && LICHTAN && !pressed){
+		pressed = true;
+	}
+	else if (digitalRead(BUTTONBACKLIGHT) && LICHTAN && pressed){
+		pressed = false;
 		BACKLIGHTAUS();
 		LICHTAN = false;
 	}
-	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN ){
+	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN && !pressed ){
+		pressed = true;
+	}
+	else if (digitalRead(BUTTONBACKLIGHT) && !LICHTAN && pressed ){
+		pressed = false;
 		BACKLIGHTAN();
 		LICHTAN = true;
 	}
