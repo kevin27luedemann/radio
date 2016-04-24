@@ -7,7 +7,6 @@ fi
 
 # grundlegende Zeitvariablen
 stunde=`date +"%H"`
-stunde=6
 minute=`date +"%M"`
 heute=`date +"%e.%b.%Y"`
 #stunde=5
