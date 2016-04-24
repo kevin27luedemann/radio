@@ -223,7 +223,6 @@ static bool pressed = false;
 			}
 		}
 		buffer[filesize-1]='\0';
-		buffer[filesize-2]='\0';
 
 		if(buffer[0]!='\0'){
 			const char *format = "<span font_desc=\"Sans 12\">\%s</span>";
