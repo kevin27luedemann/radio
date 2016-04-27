@@ -1,5 +1,3 @@
-radio
-main
 *.log
 *.aux
 *.blg
@@ -9,3 +7,5 @@ main
 *-blx.bib
 *.bbl
 *.swp
+radio
+main
