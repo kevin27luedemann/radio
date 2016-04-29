@@ -48,7 +48,7 @@ int main(int argc, char* argv[])
 	LICHTAN = true;
 
 #ifndef demo
-	system("mpc volume 83");	//set volume to best value
+	system("mpc volume 97");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
 #endif
 	system("mkdir -p /tmp/piradio");
@@ -231,8 +231,8 @@ static gboolean update_trackscreen(gpointer data){
 		buffer[0]='\0';
 		fread(buffer, 1, filesize, file);
 		for(int i=0; i<filesize; i++){
-			if(buffer[i]=='|' || buffer[i]==':'){
-				buffer[i]='\n';
+			if(buffer[i]=='|' || buffer[i]==':' || buffer[i]=='-'){
+				buffer[i+1]='\n';
 			}
 		}
 		buffer[filesize-1]='\0';
