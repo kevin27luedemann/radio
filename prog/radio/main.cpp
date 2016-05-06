@@ -247,7 +247,7 @@ static gboolean update_trackscreen(gpointer data){
 		else{
 			const char *format = "<span font_desc=\"Sans 12\">\%s</span>";
 			char *markup;
-			markup = g_markup_printf_escaped (format, "\nRadio\n");
+			markup = g_markup_printf_escaped (format, "\n\nRadio\n");
 			gtk_label_set_markup (GTK_LABEL(data), markup);
 			g_free (markup);
 		}
@@ -279,14 +279,14 @@ static gboolean update_datescreen(gpointer data){
 //hilfsfunktionen
 char* asct(const struct tm *timeptr)
 {
-  static const char wday_name[][4] = {
+  static const char wday_name[][3] = {
     "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"
   };
   static const char mon_name[][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jan", "Feb", "Mar", "Apr", "Mai", "Jun",
     "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
   };
-  static char result[26];
+  static char result[25];
   sprintf(result, "%.2s %3d.%.3s.%d %.2d:%.2d:%.2d",
 	wday_name[timeptr->tm_wday],
 	timeptr->tm_mday,
