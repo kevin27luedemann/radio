@@ -35,6 +35,10 @@ char* asct(const struct tm *timeptr, int auswahl);
 GtkBuilder	*builder_main;
 GObject		*window_main, *button, *label_track, *label_date;
 GObject		*window_off, *label_off_dat, *label_off_uhr;
+GObject		*window_black;
+
+GdkRGBA black = {0, 0, 0, 1};
+GdkRGBA white = {1, 1, 1, 1};
 
 int main(int argc, char* argv[])
 {
@@ -78,12 +82,14 @@ int main(int argc, char* argv[])
 	button		= gtk_builder_get_object(builder_main, "button_next");
 	g_signal_connect(button, "clicked", G_CALLBACK(button_next),NULL);
 
-	label_track	= gtk_builder_get_object(builder_main, "label_track");
-	label_date	= gtk_builder_get_object(builder_main, "label_date");
+	label_track		= gtk_builder_get_object(builder_main, "label_track");
+	label_date		= gtk_builder_get_object(builder_main, "label_date");
 	label_off_dat	= gtk_builder_get_object(builder_main, "label_off_dat");
 	label_off_uhr	= gtk_builder_get_object(builder_main, "label_off_uhr");
 
-	window_off	= gtk_builder_get_object(builder_main, "window_off");
+	window_off		= gtk_builder_get_object(builder_main, "window_off");
+
+	window_black 	= gtk_builder_get_object(builder_main, "window_black");
 
 	//Screen update functions
 	g_timeout_add(100, update_trackscreen,NULL);
@@ -97,13 +103,15 @@ int main(int argc, char* argv[])
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_main)),mouse);	
 
 	gtk_widget_show(GTK_WIDGET(window_off));
-	GdkRGBA black = {0, 0, 0, 1};
-	GdkRGBA white = {1, 1, 1, 1};
 	gtk_widget_override_background_color(GTK_WIDGET(window_off), GTK_STATE_FLAG_NORMAL, &black);
 	gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
 	gtk_widget_override_color(GTK_WIDGET(label_off_dat), GTK_STATE_FLAG_NORMAL, &white);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_off)),mouse);	
 	gtk_widget_hide(GTK_WIDGET(window_off));
+	
+	gtk_widget_show(GTK_WIDGET(window_black));
+	gtk_widget_override_background_color(GTK_WIDGET(window_black), GTK_STATE_FLAG_NORMAL, &black);
+	
 //#endif
 
 	gtk_main();
@@ -163,6 +171,8 @@ static gboolean update_trackscreen(gpointer data){
 	else if (digitalRead(BUTTONBACKLIGHT) && LICHTAN && pressed){
 		pressed = false;
 		BACKLIGHTAUS();
+		gtk_widget_hide(GTK_WIDGET(window_off));
+		gtk_widget_hide(GTK_WIDGET(window_black));
 		LICHTAN = false;
 	}
 	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN && !pressed ){
@@ -171,6 +181,8 @@ static gboolean update_trackscreen(gpointer data){
 	else if (digitalRead(BUTTONBACKLIGHT) && !LICHTAN && pressed ){
 		pressed = false;
 		BACKLIGHTAN();
+		gtk_widget_hide(GTK_WIDGET(window_off));
+		gtk_widget_show(GTK_WIDGET(window_black));
 		LICHTAN = true;
 	}
 	//Check if screen off Button pressed
@@ -179,6 +191,7 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && !OFFSCREEN){
 		pressed1 = false;
+		gtk_widget_hide(GTK_WIDGET(window_black));
 		gtk_widget_show(GTK_WIDGET(window_off));
 		OFFSCREEN = true;
 	}
@@ -187,6 +200,7 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && OFFSCREEN){
 		pressed1 = false;
+		gtk_widget_hide(GTK_WIDGET(window_black));
 		gtk_widget_hide(GTK_WIDGET(window_off));
 		OFFSCREEN = false;
 	}

@@ -140,6 +140,18 @@ Radio
       </object>
     </child>
   </object>
+  <object class="GtkWindow" id="window_black">
+    <property name="width_request">320</property>
+    <property name="height_request">240</property>
+    <property name="can_focus">False</property>
+    <property name="resizable">False</property>
+    <property name="default_width">320</property>
+    <property name="default_height">240</property>
+    <property name="decorated">False</property>
+    <child>
+      <placeholder/>
+    </child>
+  </object>
   <object class="GtkWindow" id="window_off">
     <property name="width_request">320</property>
     <property name="height_request">240</property>
@@ -151,6 +163,7 @@ Radio
     <property name="decorated">False</property>
     <child>
       <object class="GtkBox" id="box1">
+        <property name="name">e</property>
         <property name="width_request">320</property>
         <property name="height_request">240</property>
         <property name="visible">True</property>
@@ -170,7 +183,7 @@ Radio
             <property name="track_visited_links">False</property>
             <property name="lines">1</property>
             <attributes>
-              <attribute name="font-desc" value="Cabin Semi-Bold 60"/>
+              <attribute name="font-desc" value="Cabin Semi-Bold 70"/>
             </attributes>
           </object>
           <packing>
@@ -186,7 +199,7 @@ Radio
             <property name="label" translatable="yes">So 05.May.2016</property>
             <property name="track_visited_links">False</property>
             <attributes>
-              <attribute name="font-desc" value="Cabin Semi-Bold 20"/>
+              <attribute name="font-desc" value="Cabin Semi-Bold 25"/>
             </attributes>
           </object>
           <packing>
