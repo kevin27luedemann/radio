@@ -1,4 +1,4 @@
-#define demo
+//#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -83,14 +83,15 @@ int main(int argc, char* argv[])
 	//Screen update functions
 	g_timeout_add(100, update_trackscreen,(gpointer) label_track);
 	g_timeout_add(1000, update_datescreen,(gpointer) label_date);
-	#ifndef demo
-	//	gtk_window_fullscreen(GTK_WINDOW(window_main));
-	//	gtk_widget_show_all(window);
-		GdkCursor *mouse;
-		mouse = gdk_cursor_new(GDK_BLANK_CURSOR);
-	//	gdk_window_set_cursor(gtk_widget_get_window(window_main),mouse);	
-		gdk_window_set_cursor(GDK_WINDOW(window_main),mouse);	
-	#endif
+
+#ifndef demo
+	//gtk_window_fullscreen(GTK_WINDOW(window_main));
+	//gtk_widget_show_all(window);
+	GdkCursor *mouse;
+	mouse = gdk_cursor_new(GDK_BLANK_CURSOR);
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_main)),mouse);	
+	//gdk_window_set_cursor(GDK_WINDOW(window_main),mouse);	
+#endif
 
 	gtk_main();
 	return 0;
