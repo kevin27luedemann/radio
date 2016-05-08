@@ -1,0 +1,11 @@
+*.log
+*.aux
+*.blg
+*.toc
+*.run.xml
+*.out
+*-blx.bib
+*.bbl
+*.swp
+radio
+main
