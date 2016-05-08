@@ -76,8 +76,9 @@ Radio
             <property name="justify">right</property>
             <property name="wrap">True</property>
             <property name="wrap_mode">word-char</property>
-            <property name="width_chars">18</property>
-            <property name="max_width_chars">320</property>
+            <property name="width_chars">0</property>
+            <property name="max_width_chars">0</property>
+            <property name="lines">4</property>
           </object>
           <packing>
             <property name="left_attach">0</property>
