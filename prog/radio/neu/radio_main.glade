@@ -4,18 +4,18 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">/usr/bin/piradio/play.jpg</property>
+    <property name="pixbuf">./ress/play.jpg</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="vexpand">True</property>
-    <property name="pixbuf">/usr/bin/piradio/stop.jpg</property>
+    <property name="pixbuf">./ress/stop.jpg</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">/usr/bin/piradio/next.jpg</property>
+    <property name="pixbuf">./ress/next.jpg</property>
   </object>
   <object class="GtkWindow" id="main_radio">
     <property name="name">mainwindow</property>
@@ -100,7 +100,7 @@ Radio
             <property name="label" translatable="yes">play/pause</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="receives_default">True</property>
+            <property name="receives_default">False</property>
             <property name="image">image1</property>
             <property name="focus_on_click">False</property>
             <property name="image_position">top</property>
@@ -138,6 +138,24 @@ Radio
             <property name="top_attach">2</property>
           </packing>
         </child>
+      </object>
+    </child>
+  </object>
+  <object class="GtkWindow" id="window_off">
+    <property name="width_request">320</property>
+    <property name="height_request">240</property>
+    <property name="can_focus">False</property>
+    <property name="title" translatable="yes">window_off</property>
+    <property name="resizable">False</property>
+    <property name="destroy_with_parent">True</property>
+    <property name="decorated">False</property>
+    <child>
+      <object class="GtkLabel" id="Label_off">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <property name="label" translatable="yes">21:25</property>
       </object>
     </child>
   </object>

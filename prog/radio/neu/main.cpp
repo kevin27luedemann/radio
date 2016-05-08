@@ -30,6 +30,10 @@ static gboolean update_datescreen(gpointer data);
 
 char* asct(const struct tm *timeptr);
 
+//objects for global aces
+GtkBuilder	*builder_main;
+GObject		*window_main, *window_off, *button, *label_track, *label_date;
+
 int main(int argc, char* argv[])
 {
 
@@ -53,8 +57,6 @@ int main(int argc, char* argv[])
 
 	gtk_init(&argc,&argv);
 
-	GtkBuilder	*builder_main;
-	GObject		*window_main, *button, *label_track, *label_date;
 	
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
@@ -64,21 +66,22 @@ int main(int argc, char* argv[])
 	gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/radio_main.glade", NULL);
 #endif
 	
-	window_main =	gtk_builder_get_object(builder_main, "main_radio");
-
+	window_main	= gtk_builder_get_object(builder_main, "main_radio");
 	g_signal_connect(window_main, "destroy", G_CALLBACK(gtk_main_quit),NULL);
 
-	button = 		gtk_builder_get_object(builder_main, "button_play");
+	button		= gtk_builder_get_object(builder_main, "button_play");
 	g_signal_connect(button, "clicked", G_CALLBACK(button_play),NULL);
 	
-	button = 		gtk_builder_get_object(builder_main, "button_stop");
+	button		= gtk_builder_get_object(builder_main, "button_stop");
 	g_signal_connect(button, "clicked", G_CALLBACK(button_stop),NULL);
 
-	button = 		gtk_builder_get_object(builder_main, "button_next");
+	button		= gtk_builder_get_object(builder_main, "button_next");
 	g_signal_connect(button, "clicked", G_CALLBACK(button_next),NULL);
 
-	label_track =	gtk_builder_get_object(builder_main, "label_track");
-	label_date  =	gtk_builder_get_object(builder_main, "label_date");
+	label_track	= gtk_builder_get_object(builder_main, "label_track");
+	label_date	= gtk_builder_get_object(builder_main, "label_date");
+
+	window_off	= gtk_builder_get_object(builder_main, "window_off");
 
 	//Screen update functions
 	g_timeout_add(100, update_trackscreen,(gpointer) label_track);
@@ -124,12 +127,14 @@ static void button_stop(GtkWidget *widget, gpointer data){
 	system("mpc stop");
 #else
 	system("echo stop");
+	gtk_widget_show(GTK_WIDGET(window_off));
 #endif
 }
 static void button_next(GtkWidget *widget, gpointer data){
 #ifndef demo
 	system("mpc next");
 #else
+	gtk_widget_hide(GTK_WIDGET(window_off));
 	system("echo next");
 #endif
 }
@@ -145,7 +150,8 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBACKLIGHT) && LICHTAN && pressed){
 		pressed = false;
-		BACKLIGHTAUS();
+		gtk_widget_show(GTK_WIDGET(window_off));
+		//BACKLIGHTAUS();
 		LICHTAN = false;
 	}
 	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN && !pressed ){
@@ -153,7 +159,8 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBACKLIGHT) && !LICHTAN && pressed ){
 		pressed = false;
-		BACKLIGHTAN();
+		gtk_widget_show(GTK_WIDGET(window_off));
+		//BACKLIGHTAN();
 		LICHTAN = true;
 	}
 #endif
