@@ -265,7 +265,7 @@ static gboolean update_datescreen(gpointer data){
 	time(&timer);
 	local = localtime(&timer);
 	
-	const char *format = "<span font_desc=\"18\">\%s</span>";
+	const char *format = "<span font_desc=\"19\">\%s</span>";
 	char *markup;
 
 	markup = g_markup_printf_escaped (format, asct(local));
@@ -286,8 +286,8 @@ char* asct(const struct tm *timeptr)
     "Jan", "Feb", "Mar", "Apr", "Mai", "Jun",
     "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
   };
-  static char result[25];
-  sprintf(result, "%.2s %3d.%.3s.%d %.2d:%.2d:%.2d",
+  static char result[24];
+  sprintf(result, "%.2s %2d.%.3s.%d %.2d:%.2d:%.2d",
 	wday_name[timeptr->tm_wday],
 	timeptr->tm_mday,
 	mon_name[timeptr->tm_mon],
