@@ -9,6 +9,7 @@
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <property name="vexpand">True</property>
     <property name="pixbuf">./ress/stop.jpg</property>
   </object>
   <object class="GtkImage" id="image3">
@@ -37,8 +38,10 @@
           <object class="GtkButton" id="button_stop">
             <property name="label" translatable="yes">stop</property>
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="can_focus">False</property>
             <property name="receives_default">True</property>
+            <property name="hexpand">False</property>
+            <property name="vexpand">False</property>
             <property name="image">image2</property>
             <property name="image_position">top</property>
             <property name="always_show_image">True</property>
@@ -49,24 +52,11 @@
           </packing>
         </child>
         <child>
-          <object class="GtkButton" id="button_next">
-            <property name="label" translatable="yes">next</property>
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="receives_default">True</property>
-            <property name="image">image3</property>
-            <property name="image_position">top</property>
-            <property name="always_show_image">True</property>
-          </object>
-          <packing>
-            <property name="left_attach">2</property>
-            <property name="top_attach">2</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkLabel" id="label_track">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="label" translatable="yes">
 
 Radio
@@ -92,6 +82,8 @@ Radio
           <object class="GtkLabel" id="label_date">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
             <property name="label" translatable="yes">Sa 30.Apr.2016 15:46:52</property>
             <property name="justify">fill</property>
             <attributes>
@@ -106,11 +98,12 @@ Radio
         </child>
         <child>
           <object class="GtkButton" id="button_play">
-            <property name="label" translatable="yes">play/pause</property>
+            <property name="label" translatable="yes">button</property>
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
+            <property name="can_focus">False</property>
             <property name="receives_default">True</property>
             <property name="image">image1</property>
+            <property name="focus_on_click">False</property>
             <property name="image_position">top</property>
             <property name="always_show_image">True</property>
           </object>
@@ -129,6 +122,21 @@ Radio
             <property name="left_attach">0</property>
             <property name="top_attach">3</property>
             <property name="width">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="button1">
+            <property name="label" translatable="yes">next</property>
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <property name="image">image3</property>
+            <property name="image_position">top</property>
+            <property name="always_show_image">True</property>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">2</property>
           </packing>
         </child>
       </object>
