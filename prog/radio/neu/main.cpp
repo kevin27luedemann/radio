@@ -61,7 +61,7 @@ int main(int argc, char* argv[])
 #ifdef demo
 	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
 #else
-	gtk_builder_add_from_file(builder_main, "radio_main.glade", NULL);
+	gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/radio_main.glade", NULL);
 #endif
 	
 	window_main =	gtk_builder_get_object(builder_main, "main_radio");
@@ -169,8 +169,8 @@ static gboolean update_trackscreen(gpointer data){
 		buffer[0]='\0';
 		fread(buffer, 1, filesize, file);
 		for(int i=0; i<filesize; i++){
-			if(buffer[i]=='|' || buffer[i]==':'){
-				buffer[i]='\n';
+			if(buffer[i]=='|' || buffer[i]==':' || buffer[i]=='-'){
+				buffer[i+1]='\n';
 			}
 		}
 		buffer[filesize-1]='\0';

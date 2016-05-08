@@ -16,13 +16,13 @@ install: $(NAME).$(ENDUNG)
 	mv $(NAME).$(ENDUNG) radio;
 	mkdir -p /usr/bin/piradio/;
 	cp -p ./ress/*.jpg /usr/bin/piradio/;
+	cp -p radio_main.glade /usr/bin/piradio/;
 	cp radio /usr/bin/;
 	rm -f radio;
 	mkdir -p /tmp/piradio/;
 	chmod 777 /tmp/piradio/;
 	echo "test radio" > /tmp/piradio/stat.txt;
 	chmod 777 /tmp/piradio/stat.txt; 
-	startx radio
 
 installTTS:
 	mkdir -p /usr/scripte/;
