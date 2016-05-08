@@ -1,4 +1,4 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -28,7 +28,7 @@ static gboolean update_trackscreen(gpointer data);
 static gboolean update_datescreen(gpointer data);
 
 
-char* asct(const struct tm *timeptr);
+char* asct(const struct tm *timeptr, int auswahl);
 
 //objects for global aces
 GtkBuilder	*builder_main;
@@ -83,8 +83,8 @@ int main(int argc, char* argv[])
 	window_off	= gtk_builder_get_object(builder_main, "window_off");
 
 	//Screen update functions
-	g_timeout_add(100, update_trackscreen,(gpointer) label_track);
-	g_timeout_add(1000, update_datescreen,(gpointer) label_date);
+	g_timeout_add(100, update_trackscreen,NULL);
+	g_timeout_add(1000, update_datescreen,NULL);
 
 //#ifndef demo
 	//gtk_window_fullscreen(GTK_WINDOW(window_main));
@@ -94,7 +94,7 @@ int main(int argc, char* argv[])
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_main)),mouse);	
 
 	gtk_widget_show(GTK_WIDGET(window_off));
-	GdkRGBA black = {0, 0, 0, 0};
+	GdkRGBA black = {0, 0, 0, 1};
 	GdkRGBA white = {1, 1, 1, 1};
 	gtk_widget_override_background_color(GTK_WIDGET(window_off), GTK_STATE_FLAG_NORMAL, &black);
 	gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
@@ -197,7 +197,7 @@ static gboolean update_trackscreen(gpointer data){
 			gtk_label_set_markup (GTK_LABEL(data), markup);
 			g_free (markup);
 			*/
-			gtk_label_set_text(GTK_LABEL(data),buffer);
+			gtk_label_set_text(GTK_LABEL(label_track),buffer);
 
 		}
 		else{
@@ -208,7 +208,7 @@ static gboolean update_trackscreen(gpointer data){
 			gtk_label_set_markup (GTK_LABEL(data), markup);
 			g_free (markup);
 			*/
-			gtk_label_set_text(GTK_LABEL(data),"\n\nradio\n\n");
+			gtk_label_set_text(GTK_LABEL(label_track),"\n\nradio\n\n");
 		}
 		fclose(file);
 		free(buffer);
@@ -231,14 +231,16 @@ static gboolean update_datescreen(gpointer data){
 	gtk_label_set_markup (GTK_LABEL(data), markup);
 	g_free (markup);
 	*/
-	gtk_label_set_text(GTK_LABEL(data),asct(local));
+	gtk_label_set_text(GTK_LABEL(label_date),asct(local,0));
+	gtk_label_set_text(GTK_LABEL(label_off_uhr),asct(local,2));
+	gtk_label_set_text(GTK_LABEL(label_off_dat),asct(local,1));
 	
 	return true;
 }
 
 
 //hilfsfunktionen
-char* asct(const struct tm *timeptr)
+char* asct(const struct tm *timeptr, int auswahl)
 {
   static const char wday_name[][3] = {
     "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"
@@ -248,13 +250,27 @@ char* asct(const struct tm *timeptr)
     "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
   };
   static char result[24];
-  sprintf(result, "%.2s %2d.%.3s.%4d %.2d:%.2d:%.2d",
-	wday_name[timeptr->tm_wday],
-	timeptr->tm_mday,
-	mon_name[timeptr->tm_mon],
-	1900 + timeptr->tm_year,
-	timeptr->tm_hour,
-	timeptr->tm_min, 
-	timeptr->tm_sec);
+	if(auswahl == 0){
+		sprintf(result, "%.2s %2d.%.3s.%4d %.2d:%.2d:%.2d",
+			wday_name[timeptr->tm_wday],
+			timeptr->tm_mday,
+			mon_name[timeptr->tm_mon],
+			1900 + timeptr->tm_year,
+			timeptr->tm_hour,
+			timeptr->tm_min, 
+			timeptr->tm_sec);
+	}
+	else if (auswahl == 1){
+		sprintf(result, "%.2s %2d.%.3s.%4d",
+			wday_name[timeptr->tm_wday],
+			timeptr->tm_mday,
+			mon_name[timeptr->tm_mon],
+			1900 + timeptr->tm_year);
+	}
+	else if (auswahl == 2){
+		sprintf(result, "%.2d:%.2d", 
+			timeptr->tm_hour,
+			timeptr->tm_min);
+	}
   return result;
 }
