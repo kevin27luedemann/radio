@@ -62,7 +62,7 @@
 Radio
 
 </property>
-            <property name="justify">right</property>
+            <property name="justify">fill</property>
             <property name="wrap">True</property>
             <property name="wrap_mode">word-char</property>
             <property name="width_chars">0</property>
