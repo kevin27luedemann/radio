@@ -14,11 +14,13 @@
 #define hight 240
 
 #ifndef demo
-#define BUTTONBACKLIGHT 17
+#define BUTTONBACKLIGHT		17
+#define BUTTONBLACKSCREEN	22
 #define BACKLIGHTAUS()  system("sudo sh -c 'echo '0' > /sys/class/gpio/gpio508/value'");
 #define BACKLIGHTAN()   system("sudo sh -c 'echo '1' > /sys/class/gpio/gpio508/value'");
 #endif
 bool LICHTAN;
+bool OFFSCREEN;
 
 static void button_play(GtkWidget *widget, gpointer data);
 static void button_stop(GtkWidget *widget, gpointer data);
@@ -26,7 +28,6 @@ static void button_next(GtkWidget *widget, gpointer data);
 
 static gboolean update_trackscreen(gpointer data);
 static gboolean update_datescreen(gpointer data);
-
 
 char* asct(const struct tm *timeptr, int auswahl);
 
@@ -37,16 +38,18 @@ GObject		*window_off, *label_off_dat, *label_off_uhr;
 
 int main(int argc, char* argv[])
 {
-
 	//start using Backlight and turning it on
 #ifndef demo
 	wiringPiSetupGpio();
 	pinMode (BUTTONBACKLIGHT, INPUT);
 	pullUpDnControl(BUTTONBACKLIGHT,PUD_UP);
+	pinMode (BUTTONBLACKSCREEN, INPUT);
+	pullUpDnControl(BUTTONBLACKSCREEN,PUD_UP);
 	system("sudo sh -c 'echo 508 > /sys/class/gpio/export'");
 	system("sudo sh -c 'echo 'out' > /sys/class/gpio/gpio508/direction'");
 	BACKLIGHTAN();
-	LICHTAN = true;
+	LICHTAN 	= true;
+	OFFSCREEN	= false;
 
 	system("mpc volume 97");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
@@ -100,7 +103,7 @@ int main(int argc, char* argv[])
 	gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
 	gtk_widget_override_color(GTK_WIDGET(label_off_dat), GTK_STATE_FLAG_NORMAL, &white);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_off)),mouse);	
-	//gtk_widget_hide(GTK_WIDGET(window_off));
+	gtk_widget_hide(GTK_WIDGET(window_off));
 //#endif
 
 	gtk_main();
@@ -123,6 +126,7 @@ static void button_play(GtkWidget *widget, gpointer data){
 	else{
 		system("/usr/scripte/wetter.sh radio");
 	}
+	free(buffer);
 	fclose(file);
 #else
 	//system("/usr/scripte/wetter.sh");	
@@ -150,6 +154,7 @@ static void button_next(GtkWidget *widget, gpointer data){
 static gboolean update_trackscreen(gpointer data){
 #ifndef demo
 	static bool pressed = false;
+	static bool pressed1 = false;
 	system("mpc current > /tmp/piradio/stat.txt");
 	//check for light button
 	if(!digitalRead(BUTTONBACKLIGHT) && LICHTAN && !pressed){
@@ -157,8 +162,7 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBACKLIGHT) && LICHTAN && pressed){
 		pressed = false;
-		gtk_widget_show(GTK_WIDGET(window_off));
-		//BACKLIGHTAUS();
+		BACKLIGHTAUS();
 		LICHTAN = false;
 	}
 	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN && !pressed ){
@@ -166,10 +170,27 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBACKLIGHT) && !LICHTAN && pressed ){
 		pressed = false;
-		gtk_widget_hide(GTK_WIDGET(window_off));
-		//BACKLIGHTAN();
+		BACKLIGHTAN();
 		LICHTAN = true;
 	}
+	//Check if screen off Button pressed
+	if(!digitalRead(BUTTONBLACKSCREEN) && LICHTAN && !pressed1 && !OFFSCREEN){
+		pressed1 = true;
+	}
+	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && !OFFSCREEN){
+		pressed1 = false;
+		gtk_widget_show(GTK_WIDGET(window_off));
+		OFFSCREEN = true;
+	}
+	else if (!digitalRead(BUTTONBLACKSCREEN) && LICHTAN && !pressed1 && OFFSCREEN){
+		pressed1 = true;
+	}
+	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && OFFSCREEN){
+		pressed1 = false;
+		gtk_widget_hide(GTK_WIDGET(window_off));
+		OFFSCREEN = false;
+	}
+
 #endif
 	FILE *file;
 	long filesize;
