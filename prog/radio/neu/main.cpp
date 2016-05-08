@@ -1,10 +1,11 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <fstream>
 #include <time.h>
+
 #ifndef demo
 #include <wiringPi.h>
 #endif
@@ -18,16 +19,6 @@
 #define BACKLIGHTAN()   system("sudo sh -c 'echo '1' > /sys/class/gpio/gpio508/value'");
 #endif
 bool LICHTAN;
-
-#ifndef demo
-	#define playstr "/usr/bin/piradio/play.jpg"
-	#define stopstr "/usr/bin/piradio/stop.jpg"
-	#define nextstr "/usr/bin/piradio/next.jpg"
-#else
-	#define playstr "./ress/play.jpg"
-	#define stopstr "./ress/stop.jpg"
-	#define nextstr "./ress/next.jpg"
-#endif
 
 static void button_play(GtkWidget *widget, gpointer data);
 static void button_stop(GtkWidget *widget, gpointer data);
@@ -68,8 +59,10 @@ int main(int argc, char* argv[])
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
 	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
-
+	
 	window_main =	gtk_builder_get_object(builder_main, "main_radio");
+
+/*
 	g_signal_connect(window_main, "destroy", G_CALLBACK(gtk_main_quit),NULL);
 
 	button = 		gtk_builder_get_object(builder_main, "button_play");
@@ -87,7 +80,7 @@ int main(int argc, char* argv[])
 	//Screen update functions
 	g_timeout_add(100, update_trackscreen,(gpointer) label_track);
 	g_timeout_add(1000, update_datescreen,(gpointer) label_date);
-
+*/
 	#ifndef demo
 	//	gtk_window_fullscreen(GTK_WINDOW(window_main));
 	//	gtk_widget_show_all(window);
