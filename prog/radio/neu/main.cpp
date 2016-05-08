@@ -1,4 +1,4 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 	g_timeout_add(100, update_trackscreen,(gpointer) label_track);
 	g_timeout_add(1000, update_datescreen,(gpointer) label_date);
 
-#ifndef demo
+//#ifndef demo
 	//gtk_window_fullscreen(GTK_WINDOW(window_main));
 	//gtk_widget_show_all(window);
 	GdkCursor *mouse;
@@ -101,12 +101,13 @@ int main(int argc, char* argv[])
 
 	gtk_widget_show(GTK_WIDGET(window_off));
 	GdkRGBA black = {0, 0, 0, 0};
-	GdkRGBA white = {1, 1, 1, 0};
-	//gtk_widget_override_background_color(GTK_WIDGET(window_off), GTK_STATE_FLAG_NORMAL, &white);
-	//gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
+	GdkRGBA white = {1, 1, 1, 1};
+	gtk_widget_override_background_color(GTK_WIDGET(window_off), GTK_STATE_FLAG_NORMAL, &black);
+	gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
+	gtk_widget_override_color(GTK_WIDGET(label_off_dat), GTK_STATE_FLAG_NORMAL, &white);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_off)),mouse);	
 	//gtk_widget_hide(GTK_WIDGET(window_off));
-#endif
+//#endif
 
 	gtk_main();
 	return 0;
