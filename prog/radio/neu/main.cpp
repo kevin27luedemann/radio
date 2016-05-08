@@ -1,4 +1,4 @@
-#define demo
+//#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -32,7 +32,8 @@ char* asct(const struct tm *timeptr);
 
 //objects for global aces
 GtkBuilder	*builder_main;
-GObject		*window_main, *window_off, *button, *label_track, *label_date;
+GObject		*window_main, *button, *label_track, *label_date;
+GObject		*window_off, *label_off_dat, *label_off_uhr;
 
 int main(int argc, char* argv[])
 {
@@ -63,7 +64,9 @@ int main(int argc, char* argv[])
 #ifdef demo
 	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
 #else
-	gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/radio_main.glade", NULL);
+	//gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/radio_main.glade", NULL);
+	//gtk_builder_add_from_file(builder_main, "radio_main.glade", NULL);
+	gtk_builder_add_from_file(builder_main, "./layout_radio.glade", NULL);
 #endif
 	
 	window_main	= gtk_builder_get_object(builder_main, "main_radio");
@@ -80,6 +83,8 @@ int main(int argc, char* argv[])
 
 	label_track	= gtk_builder_get_object(builder_main, "label_track");
 	label_date	= gtk_builder_get_object(builder_main, "label_date");
+	label_off_dat	= gtk_builder_get_object(builder_main, "label_off_dat");
+	label_off_uhr	= gtk_builder_get_object(builder_main, "label_off_uhr");
 
 	window_off	= gtk_builder_get_object(builder_main, "window_off");
 
@@ -91,9 +96,16 @@ int main(int argc, char* argv[])
 	//gtk_window_fullscreen(GTK_WINDOW(window_main));
 	//gtk_widget_show_all(window);
 	GdkCursor *mouse;
-	mouse = gdk_cursor_new(GDK_BLANK_CURSOR);
+	mouse 	= gdk_cursor_new(GDK_BLANK_CURSOR);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_main)),mouse);	
-	//gdk_window_set_cursor(GDK_WINDOW(window_main),mouse);	
+
+	gtk_widget_show(GTK_WIDGET(window_off));
+	GdkRGBA black = {0, 0, 0, 0};
+	GdkRGBA white = {1, 1, 1, 0};
+	//gtk_widget_override_background_color(GTK_WIDGET(window_off), GTK_STATE_FLAG_NORMAL, &white);
+	//gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_off)),mouse);	
+	//gtk_widget_hide(GTK_WIDGET(window_off));
 #endif
 
 	gtk_main();
@@ -159,7 +171,7 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBACKLIGHT) && !LICHTAN && pressed ){
 		pressed = false;
-		gtk_widget_show(GTK_WIDGET(window_off));
+		gtk_widget_hide(GTK_WIDGET(window_off));
 		//BACKLIGHTAN();
 		LICHTAN = true;
 	}
