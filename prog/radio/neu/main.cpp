@@ -1,4 +1,4 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -58,7 +58,11 @@ int main(int argc, char* argv[])
 	
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
+#ifdef
 	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+#else
+	gtk_builder_add_from_file(builder_main, "radio_main.glade", NULL);
+#endif
 	
 	window_main =	gtk_builder_get_object(builder_main, "main_radio");
 
@@ -229,7 +233,7 @@ char* asct(const struct tm *timeptr)
     "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
   };
   static char result[24];
-  sprintf(result, "%.2s %2d.%.3s.%d %.2d:%.2d:%.2d",
+  sprintf(result, "%.2s %2d.%.3s.%4d %.2d:%.2d:%.2d",
 	wday_name[timeptr->tm_wday],
 	timeptr->tm_mday,
 	mon_name[timeptr->tm_mon],
