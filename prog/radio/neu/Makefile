@@ -10,7 +10,7 @@ all: $(NAME).$(ENDUNG)
 
   
 $(NAME).$(ENDUNG): $(SRCS)
-	$(CC) $(CFLAGS) $(SRCS) $(GTKFLAGS) $(WIRINGFLAG)
+	$(CC) $(CFLAGS) $(SRCS) $(GTKFLAGS) # $(WIRINGFLAG)
 
 install: $(NAME).$(ENDUNG)
 	mv $(NAME).$(ENDUNG) radio;

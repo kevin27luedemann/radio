@@ -78,9 +78,6 @@ Radio
             <property name="wrap_mode">word-char</property>
             <property name="width_chars">18</property>
             <property name="max_width_chars">320</property>
-            <attributes>
-              <attribute name="font-desc" value="Accanthis ADF Std 13"/>
-            </attributes>
           </object>
           <packing>
             <property name="left_attach">0</property>
@@ -94,9 +91,6 @@ Radio
             <property name="can_focus">False</property>
             <property name="label" translatable="yes">Sa 30.Apr.2016 15:46:52</property>
             <property name="justify">fill</property>
-            <attributes>
-              <attribute name="font-desc" value="DejaVu Sans Bold Oblique Semi-Condensed 19"/>
-            </attributes>
           </object>
           <packing>
             <property name="left_attach">0</property>
