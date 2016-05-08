@@ -149,23 +149,30 @@ Radio
     <property name="is_focus">True</property>
     <property name="title" translatable="yes">window_off</property>
     <property name="resizable">False</property>
-    <property name="default_width">320</property>
-    <property name="default_height">240</property>
     <property name="decorated">False</property>
     <child>
       <object class="GtkBox" id="box1">
+        <property name="name">e</property>
+        <property name="width_request">320</property>
+        <property name="height_request">240</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <property name="orientation">vertical</property>
         <child>
           <object class="GtkLabel" id="label_off_uhr">
+            <property name="width_request">320</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
-            <property name="label" translatable="yes">21:45</property>
+            <property name="label" translatable="yes">19:45</property>
+            <property name="justify">center</property>
+            <property name="track_visited_links">False</property>
+            <property name="lines">1</property>
             <attributes>
-              <attribute name="font-desc" value="Cabin Semi-Bold 90"/>
+              <attribute name="font-desc" value="Cabin Semi-Bold 60"/>
             </attributes>
           </object>
           <packing>
@@ -178,12 +185,10 @@ Radio
           <object class="GtkLabel" id="label_off_dat">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">False</property>
             <property name="label" translatable="yes">So 05.May.2016</property>
             <property name="track_visited_links">False</property>
             <attributes>
-              <attribute name="font-desc" value="Cabin Semi-Bold 30"/>
+              <attribute name="font-desc" value="Cabin Semi-Bold 20"/>
             </attributes>
           </object>
           <packing>
