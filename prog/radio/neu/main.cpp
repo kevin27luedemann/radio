@@ -1,4 +1,4 @@
-#define demo
+//#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 	
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
-#ifdef
+#ifdef demo
 	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
 #else
 	gtk_builder_add_from_file(builder_main, "radio_main.glade", NULL);
