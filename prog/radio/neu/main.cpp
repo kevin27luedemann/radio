@@ -61,13 +61,7 @@ int main(int argc, char* argv[])
 	
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
-#ifdef demo
 	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
-#else
-	//gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/radio_main.glade", NULL);
-	//gtk_builder_add_from_file(builder_main, "radio_main.glade", NULL);
-	gtk_builder_add_from_file(builder_main, "./layout_radio.glade", NULL);
-#endif
 	
 	window_main	= gtk_builder_get_object(builder_main, "main_radio");
 	g_signal_connect(window_main, "destroy", G_CALLBACK(gtk_main_quit),NULL);
