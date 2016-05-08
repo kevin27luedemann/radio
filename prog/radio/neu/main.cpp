@@ -68,7 +68,8 @@ int main(int argc, char* argv[])
 	
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
-	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+	//gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+	gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
 	
 	window_main	= gtk_builder_get_object(builder_main, "main_radio");
 	g_signal_connect(window_main, "destroy", G_CALLBACK(gtk_main_quit),NULL);
@@ -111,6 +112,8 @@ int main(int argc, char* argv[])
 	
 	gtk_widget_show(GTK_WIDGET(window_black));
 	gtk_widget_override_background_color(GTK_WIDGET(window_black), GTK_STATE_FLAG_NORMAL, &black);
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_black)),mouse);	
+	gtk_widget_hide(GTK_WIDGET(window_black));
 	
 //#endif
 
@@ -172,7 +175,7 @@ static gboolean update_trackscreen(gpointer data){
 		pressed = false;
 		BACKLIGHTAUS();
 		gtk_widget_hide(GTK_WIDGET(window_off));
-		gtk_widget_hide(GTK_WIDGET(window_black));
+		gtk_widget_show(GTK_WIDGET(window_black));
 		LICHTAN = false;
 	}
 	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN && !pressed ){
@@ -182,7 +185,7 @@ static gboolean update_trackscreen(gpointer data){
 		pressed = false;
 		BACKLIGHTAN();
 		gtk_widget_hide(GTK_WIDGET(window_off));
-		gtk_widget_show(GTK_WIDGET(window_black));
+		gtk_widget_hide(GTK_WIDGET(window_black));
 		LICHTAN = true;
 	}
 	//Check if screen off Button pressed

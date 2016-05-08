@@ -4,18 +4,18 @@
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">./ress/play.jpg</property>
+    <property name="pixbuf">/usr/bin/piradio/play.jpg</property>
   </object>
   <object class="GtkImage" id="image2">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="vexpand">True</property>
-    <property name="pixbuf">./ress/stop.jpg</property>
+    <property name="pixbuf">/usr/bin/piradio/stop.jpg</property>
   </object>
   <object class="GtkImage" id="image3">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">./ress/next.jpg</property>
+    <property name="pixbuf">/usr/bin/piradio/next.jpg</property>
   </object>
   <object class="GtkWindow" id="main_radio">
     <property name="name">mainwindow</property>
