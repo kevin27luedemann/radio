@@ -22,6 +22,7 @@ install: $(NAME).$(ENDUNG)
 	chmod 777 /tmp/piradio/;
 	echo "test radio" > /tmp/piradio/stat.txt;
 	chmod 777 /tmp/piradio/stat.txt; 
+	startx radio
 
 installTTS:
 	mkdir -p /usr/scripte/;

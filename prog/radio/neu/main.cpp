@@ -1,4 +1,4 @@
-#define demo
+//#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	BACKLIGHTAN();
 	LICHTAN = true;
 
-	system("mpc volume 83");	//set volume to best value
+	system("mpc volume 97");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
 #endif
 
@@ -89,11 +89,12 @@ int main(int argc, char* argv[])
 	g_timeout_add(1000, update_datescreen,(gpointer) label_date);
 
 	#ifndef demo
-		gtk_window_fullscreen(GTK_WINDOW(window));
-		gtk_widget_show_all(window);
+	//	gtk_window_fullscreen(GTK_WINDOW(window_main));
+	//	gtk_widget_show_all(window);
 		GdkCursor *mouse;
 		mouse = gdk_cursor_new(GDK_BLANK_CURSOR);
-		gdk_window_set_cursor(gtk_widget_get_window(window),mouse);	
+	//	gdk_window_set_cursor(gtk_widget_get_window(window_main),mouse);	
+		gdk_window_set_cursor(GDK_WINDOW(window_main),mouse);	
 	#endif
 
 	gtk_main();
