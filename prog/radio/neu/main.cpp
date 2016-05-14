@@ -320,14 +320,14 @@ static gboolean update_datescreen(gpointer data){
 	else if(NACHTS && local->tm_hour < 23 && local->tm_hour >4){
 		NACHTS=false;
 	}
-	if(!OFFSCREEN && NACHTS && counter_off >= 30){
+	if(!OFFSCREEN && NACHTS && counter_off >= 3600){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_black));
 #ifndef demo
 		BACKLIGHTAUS();
 #endif
 	}
-	else if(!OFFSCREEN && !NACHTS && counter_off >= 30){
+	else if(!OFFSCREEN && !NACHTS && counter_off >= 3600){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
 	}
