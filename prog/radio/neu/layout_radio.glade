@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- Generated with glade 3.18.3 -->
 <interface>
-  <requires lib="gtk+" version="3.6"/>
   <object class="GtkImage" id="image1">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -142,6 +141,7 @@ Radio
     </child>
   </object>
   <object class="GtkWindow" id="window_black">
+    <property name="name">window-black</property>
     <property name="width_request">320</property>
     <property name="height_request">240</property>
     <property name="can_focus">False</property>
@@ -151,12 +151,12 @@ Radio
     <property name="decorated">False</property>
     <child>
       <object class="GtkButton" id="button_screen_on">
+        <property name="name">button-screen-on</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="receives_default">False</property>
-        <property name="hexpand">True</property>
-        <property name="vexpand">True</property>
-        <property name="focus_on_click">False</property>
+        <property name="receives_default">True</property>
+        <property name="margin_top">7</property>
+        <property name="xalign">0.54000002145767212</property>
         <child>
           <placeholder/>
         </child>
@@ -223,6 +223,7 @@ Radio
     </child>
   </object>
   <object class="GtkWindow" id="window_off1">
+    <property name="name">window-off1</property>
     <property name="width_request">320</property>
     <property name="height_request">240</property>
     <property name="can_focus">True</property>
@@ -230,28 +231,25 @@ Radio
     <property name="is_focus">True</property>
     <property name="title" translatable="yes">window_off1</property>
     <property name="resizable">False</property>
-    <property name="default_width">320</property>
-    <property name="default_height">240</property>
     <property name="decorated">False</property>
     <child>
       <object class="GtkButton" id="button_screen_on1">
+        <property name="name">button-screen-on1</property>
         <property name="visible">True</property>
         <property name="can_focus">True</property>
         <property name="receives_default">True</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
         <property name="focus_on_click">False</property>
         <child>
           <object class="GtkBox" id="box2">
-            <property name="name">e</property>
-            <property name="width_request">320</property>
-            <property name="height_request">240</property>
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="hexpand">True</property>
-            <property name="vexpand">True</property>
             <property name="orientation">vertical</property>
             <child>
               <object class="GtkLabel" id="label_off_uhr1">
                 <property name="width_request">320</property>
+                <property name="height_request">-1</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="hexpand">True</property>
@@ -274,6 +272,8 @@ Radio
               <object class="GtkLabel" id="label_off_dat1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">False</property>
                 <property name="label" translatable="yes">So 05.May.2016</property>
                 <property name="track_visited_links">False</property>
                 <attributes>

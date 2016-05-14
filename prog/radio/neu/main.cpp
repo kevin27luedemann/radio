@@ -69,12 +69,55 @@ int main(int argc, char* argv[])
 
 	gtk_init(&argc,&argv);
 
-	
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
 	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
-	//gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
+
+	//get css provider
+	GtkCssProvider *provider;
+	GdkDisplay *display;
+	GdkScreen *screen;
 	
+	provider = gtk_css_provider_new();
+	display = gdk_display_get_default();
+	screen = gdk_display_get_default_screen(display);
+
+	gtk_style_context_add_provider_for_screen (screen,
+                                 GTK_STYLE_PROVIDER (provider),
+                                 GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	
+	gtk_css_provider_load_from_data (GTK_CSS_PROVIDER(provider),
+                                   	"GtkButton#button-screen-on {\n"
+												"	border-image: none;\n"
+												"	background-image: none;\n"
+                                   	"	background-color: #000000;\n"
+												"	color: #ffffff;\n"
+                                   	"}\n"
+												"GtkWindow#window-black {\n"
+												"	border-image: none;\n"
+												"	border-color: black;\n"
+												"	background-image: none;\n"
+                                   	"	background-color: #000000;\n"
+												"	color: #ffffff;\n"
+												"}\n"
+                                   	"GtkButton#button-screen-on1 {\n"
+												"	border-image: none;\n"
+												"	background-image: none;\n"
+                                   	"	background-color: #000000;\n"
+												"	color: #ffffff;\n"
+                                   	"}\n"
+												"GtkWindow#window-off1 {\n"
+												"	border-image: none;\n"
+												"	border-color: black;\n"
+												"	background-image: none;\n"
+                                   	"	background-color: #000000;\n"
+												"	color: #ffffff;\n"
+												"}\n"
+												, -1, NULL);
+
+	g_object_unref (provider);
+
+	//gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
 	window_main	= gtk_builder_get_object(builder_main, "main_radio");
 	g_signal_connect(window_main, "destroy", G_CALLBACK(gtk_main_quit),NULL);
 
@@ -112,19 +155,10 @@ int main(int argc, char* argv[])
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_main)),mouse);	
 
 	gtk_widget_show(GTK_WIDGET(window_off1));
-	gtk_widget_override_background_color(GTK_WIDGET(window_off1), GTK_STATE_FLAG_NORMAL, &black);
-	gtk_widget_override_background_color(GTK_WIDGET(button_screen_on1), GTK_STATE_FLAG_NORMAL, &black);
-	gtk_widget_override_background_color(GTK_WIDGET(button_screen_on1), GTK_STATE_FLAG_ACTIVE, &black);
-	gtk_widget_override_color(GTK_WIDGET(button_screen_on1), GTK_STATE_FLAG_ACTIVE, &black);
-	gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
-	gtk_widget_override_color(GTK_WIDGET(label_off_dat), GTK_STATE_FLAG_NORMAL, &white);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_off1)),mouse);	
 	gtk_widget_hide(GTK_WIDGET(window_off1));
 	
 	gtk_widget_show(GTK_WIDGET(window_black));
-	gtk_widget_override_background_color(GTK_WIDGET(window_black), GTK_STATE_FLAG_NORMAL, &black);
-	gtk_widget_override_background_color(GTK_WIDGET(button_screen_on), GTK_STATE_FLAG_NORMAL, &black);
-	gtk_widget_override_color(GTK_WIDGET(button_screen_on), GTK_STATE_FLAG_NORMAL, &black);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_black)),mouse);	
 	gtk_widget_hide(GTK_WIDGET(window_black));
 	
