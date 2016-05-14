@@ -1,4 +1,4 @@
-#define demo
+//#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -71,7 +71,8 @@ int main(int argc, char* argv[])
 
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
-	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+	//gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+	gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
 
 	//get css provider
 	GtkCssProvider *provider;
