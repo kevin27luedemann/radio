@@ -21,6 +21,8 @@
 #endif
 bool LICHTAN;
 bool OFFSCREEN;
+bool NACHTS;
+unsigned int counter_off;
 
 static void button_play(GtkWidget *widget, gpointer data);
 static void button_stop(GtkWidget *widget, gpointer data);
@@ -55,13 +57,15 @@ int main(int argc, char* argv[])
 	system("sudo sh -c 'echo 'out' > /sys/class/gpio/gpio508/direction'");
 	BACKLIGHTAN();
 	LICHTAN 	= true;
-	OFFSCREEN	= false;
 
 //	system("sudo /home/pi/.xinitrc");//Screen Blanking
 	system("sudo sh -c \"TERM=linux setterm -blank 0 >/dev/tty0\"");
 	system("mpc volume 97");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
 #endif
+	OFFSCREEN	= false;
+	NACHTS = false;
+	counter_off = 0;
 
 	system("mkdir -p /tmp/piradio");
 	system("chmod 777 /tmp/piradio");
@@ -210,9 +214,13 @@ static void button_next(GtkWidget *widget, gpointer data){
 }
 static void button_screen_on_CB(GtkWidget *widget, gpointer data){
 	gtk_widget_hide(GTK_WIDGET(window_black));
+	counter_off = 0;
+	OFFSCREEN = false;
 }
 static void button_screen_on1_CB(GtkWidget *widget, gpointer data){
 	gtk_widget_hide(GTK_WIDGET(window_off1));
+	counter_off = 0;
+	OFFSCREEN = false;
 }
 
 //Screenupdate funktion
@@ -282,24 +290,10 @@ static gboolean update_trackscreen(gpointer data){
 		buffer[filesize-1]='\0';
 
 		if(buffer[0]!='\0'){
-			/*
-			const char *format = "<span font_desc=\"Sans 12\">\%s</span>";
-			char *markup;
-			markup = g_markup_printf_escaped (format, buffer);
-			gtk_label_set_markup (GTK_LABEL(data), markup);
-			g_free (markup);
-			*/
 			gtk_label_set_text(GTK_LABEL(label_track),buffer);
 
 		}
 		else{
-			/*
-			const char *format = "<span font_desc=\"Sans 12\">\%s</span>";
-			char *markup;
-			markup = g_markup_printf_escaped (format, "\nRadio\n");
-			gtk_label_set_markup (GTK_LABEL(data), markup);
-			g_free (markup);
-			*/
 			gtk_label_set_text(GTK_LABEL(label_track),"\n\nradio\n\n");
 		}
 		fclose(file);
@@ -315,17 +309,29 @@ static gboolean update_datescreen(gpointer data){
 	struct tm *local;
 	time(&timer);
 	local = localtime(&timer);
-	/*	
-	const char *format = "<span font_desc=\"18\">\%s</span>";
-	char *markup;
 
-	markup = g_markup_printf_escaped (format, asct(local));
-	gtk_label_set_markup (GTK_LABEL(data), markup);
-	g_free (markup);
-	*/
+	//time tracking and screensaver
+	if(!NACHTS && local->tm_hour >= 23 && local->tm_hour <=4){
+		NACHTS=true;
+	}
+	else if(NACHTS && local->tm_hour < 23 && local->tm_hour >4){
+		NACHTS=false;
+	}
+	if(!OFFSCREEN && NACHTS && counter_off >= 30){
+		OFFSCREEN = true;
+		gtk_widget_show(GTK_WIDGET(window_black));
+	}
+	else if(!OFFSCREEN && !NACHTS && counter_off >= 30){
+		OFFSCREEN = true;
+		gtk_widget_show(GTK_WIDGET(window_off1));
+	}
+
+
 	gtk_label_set_text(GTK_LABEL(label_date),asct(local,0));
 	gtk_label_set_text(GTK_LABEL(label_off_uhr),asct(local,2));
 	gtk_label_set_text(GTK_LABEL(label_off_dat),asct(local,1));
+
+	counter_off++;
 	
 	return true;
 }
