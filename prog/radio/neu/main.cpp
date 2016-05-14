@@ -1,4 +1,4 @@
-//#define demo
+#define demo
 
 #include <gtk/gtk.h>
 #include <stdlib.h>
@@ -25,6 +25,8 @@ bool OFFSCREEN;
 static void button_play(GtkWidget *widget, gpointer data);
 static void button_stop(GtkWidget *widget, gpointer data);
 static void button_next(GtkWidget *widget, gpointer data);
+static void button_screen_on_CB(GtkWidget *widget, gpointer data);
+static void button_screen_on1_CB(GtkWidget *widget, gpointer data);
 
 static gboolean update_trackscreen(gpointer data);
 static gboolean update_datescreen(gpointer data);
@@ -34,8 +36,8 @@ char* asct(const struct tm *timeptr, int auswahl);
 //objects for global aces
 GtkBuilder	*builder_main;
 GObject		*window_main, *button, *label_track, *label_date;
-GObject		*window_off, *label_off_dat, *label_off_uhr;
-GObject		*window_black;
+GObject		*window_off1, *label_off_dat, *label_off_uhr, *button_screen_on1;
+GObject		*window_black, *button_screen_on;
 
 GdkRGBA black = {0, 0, 0, 1};
 GdkRGBA white = {1, 1, 1, 1};
@@ -68,8 +70,8 @@ int main(int argc, char* argv[])
 	
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
-	//gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
-	gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
+	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+	//gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
 	
 	window_main	= gtk_builder_get_object(builder_main, "main_radio");
 	g_signal_connect(window_main, "destroy", G_CALLBACK(gtk_main_quit),NULL);
@@ -88,9 +90,13 @@ int main(int argc, char* argv[])
 	label_off_dat	= gtk_builder_get_object(builder_main, "label_off_dat");
 	label_off_uhr	= gtk_builder_get_object(builder_main, "label_off_uhr");
 
-	window_off		= gtk_builder_get_object(builder_main, "window_off");
+	window_off1		= gtk_builder_get_object(builder_main, "window_off1");
+	button_screen_on1 = gtk_builder_get_object(builder_main, "button_screen_on1");
+	g_signal_connect(button_screen_on1, "clicked", G_CALLBACK(button_screen_on1_CB),NULL);
 
 	window_black 	= gtk_builder_get_object(builder_main, "window_black");
+	button_screen_on = gtk_builder_get_object(builder_main, "button_screen_on");
+	g_signal_connect(button_screen_on, "clicked", G_CALLBACK(button_screen_on_CB),NULL);
 
 	//Screen update functions
 	g_timeout_add(100, update_trackscreen,NULL);
@@ -103,15 +109,20 @@ int main(int argc, char* argv[])
 	mouse 	= gdk_cursor_new(GDK_BLANK_CURSOR);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_main)),mouse);	
 
-	gtk_widget_show(GTK_WIDGET(window_off));
-	gtk_widget_override_background_color(GTK_WIDGET(window_off), GTK_STATE_FLAG_NORMAL, &black);
+	gtk_widget_show(GTK_WIDGET(window_off1));
+	gtk_widget_override_background_color(GTK_WIDGET(window_off1), GTK_STATE_FLAG_NORMAL, &black);
+	gtk_widget_override_background_color(GTK_WIDGET(button_screen_on1), GTK_STATE_FLAG_NORMAL, &black);
+	gtk_widget_override_background_color(GTK_WIDGET(button_screen_on1), GTK_STATE_FLAG_ACTIVE, &black);
+	gtk_widget_override_color(GTK_WIDGET(button_screen_on1), GTK_STATE_FLAG_ACTIVE, &black);
 	gtk_widget_override_color(GTK_WIDGET(label_off_uhr), GTK_STATE_FLAG_NORMAL, &white);
 	gtk_widget_override_color(GTK_WIDGET(label_off_dat), GTK_STATE_FLAG_NORMAL, &white);
-	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_off)),mouse);	
-	gtk_widget_hide(GTK_WIDGET(window_off));
+	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_off1)),mouse);	
+	gtk_widget_hide(GTK_WIDGET(window_off1));
 	
 	gtk_widget_show(GTK_WIDGET(window_black));
 	gtk_widget_override_background_color(GTK_WIDGET(window_black), GTK_STATE_FLAG_NORMAL, &black);
+	gtk_widget_override_background_color(GTK_WIDGET(button_screen_on), GTK_STATE_FLAG_NORMAL, &black);
+	gtk_widget_override_color(GTK_WIDGET(button_screen_on), GTK_STATE_FLAG_NORMAL, &black);
 	gdk_window_set_cursor(gtk_widget_get_window(GTK_WIDGET(window_black)),mouse);	
 	gtk_widget_hide(GTK_WIDGET(window_black));
 	
@@ -149,16 +160,22 @@ static void button_stop(GtkWidget *widget, gpointer data){
 	system("mpc stop");
 #else
 	system("echo stop");
-	gtk_widget_show(GTK_WIDGET(window_off));
+	gtk_widget_show(GTK_WIDGET(window_off1));
 #endif
 }
 static void button_next(GtkWidget *widget, gpointer data){
 #ifndef demo
 	system("mpc next");
 #else
-	gtk_widget_hide(GTK_WIDGET(window_off));
+	gtk_widget_show(GTK_WIDGET(window_black));
 	system("echo next");
 #endif
+}
+static void button_screen_on_CB(GtkWidget *widget, gpointer data){
+	gtk_widget_hide(GTK_WIDGET(window_black));
+}
+static void button_screen_on1_CB(GtkWidget *widget, gpointer data){
+	gtk_widget_hide(GTK_WIDGET(window_off1));
 }
 
 //Screenupdate funktion
@@ -174,7 +191,7 @@ static gboolean update_trackscreen(gpointer data){
 	else if (digitalRead(BUTTONBACKLIGHT) && LICHTAN && pressed){
 		pressed = false;
 		BACKLIGHTAUS();
-		gtk_widget_hide(GTK_WIDGET(window_off));
+		gtk_widget_hide(GTK_WIDGET(window_off1));
 		gtk_widget_show(GTK_WIDGET(window_black));
 		LICHTAN = false;
 	}
@@ -184,7 +201,7 @@ static gboolean update_trackscreen(gpointer data){
 	else if (digitalRead(BUTTONBACKLIGHT) && !LICHTAN && pressed ){
 		pressed = false;
 		BACKLIGHTAN();
-		gtk_widget_hide(GTK_WIDGET(window_off));
+		gtk_widget_hide(GTK_WIDGET(window_off1));
 		gtk_widget_hide(GTK_WIDGET(window_black));
 		LICHTAN = true;
 	}
@@ -195,7 +212,7 @@ static gboolean update_trackscreen(gpointer data){
 	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && !OFFSCREEN){
 		pressed1 = false;
 		gtk_widget_hide(GTK_WIDGET(window_black));
-		gtk_widget_show(GTK_WIDGET(window_off));
+		gtk_widget_show(GTK_WIDGET(window_off1));
 		OFFSCREEN = true;
 	}
 	else if (!digitalRead(BUTTONBLACKSCREEN) && LICHTAN && !pressed1 && OFFSCREEN){
@@ -204,7 +221,7 @@ static gboolean update_trackscreen(gpointer data){
 	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && OFFSCREEN){
 		pressed1 = false;
 		gtk_widget_hide(GTK_WIDGET(window_black));
-		gtk_widget_hide(GTK_WIDGET(window_off));
+		gtk_widget_hide(GTK_WIDGET(window_off1));
 		OFFSCREEN = false;
 	}
 
