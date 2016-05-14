@@ -214,6 +214,9 @@ static void button_next(GtkWidget *widget, gpointer data){
 }
 static void button_screen_on_CB(GtkWidget *widget, gpointer data){
 	gtk_widget_hide(GTK_WIDGET(window_black));
+#ifndef demo
+	BACKLIGHTAN();
+#endif
 	counter_off = 0;
 	OFFSCREEN = false;
 }
@@ -320,6 +323,9 @@ static gboolean update_datescreen(gpointer data){
 	if(!OFFSCREEN && NACHTS && counter_off >= 30){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_black));
+#ifndef demo
+		BACKLIGHTAUS();
+#endif
 	}
 	else if(!OFFSCREEN && !NACHTS && counter_off >= 30){
 		OFFSCREEN = true;
