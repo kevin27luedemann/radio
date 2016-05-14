@@ -16,7 +16,7 @@ install: $(NAME).$(ENDUNG)
 	mv $(NAME).$(ENDUNG) radio;
 	mkdir -p /usr/bin/piradio/;
 	cp -p ./ress/*.jpg /usr/bin/piradio/;
-	#cp -p layout_radio.glade /usr/bin/piradio/;
+	cp -p layout_radio.glade /usr/bin/piradio/;
 	cp radio /usr/bin/;
 	rm -f radio;
 	mkdir -p /tmp/piradio/;
