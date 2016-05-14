@@ -57,6 +57,8 @@ int main(int argc, char* argv[])
 	LICHTAN 	= true;
 	OFFSCREEN	= false;
 
+//	system("sudo /home/pi/.xinitrc");//Screen Blanking
+	system("sudo sh -c \"TERM=linux setterm -blank 0 >/dev/tty0\"");
 	system("mpc volume 97");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
 #endif
