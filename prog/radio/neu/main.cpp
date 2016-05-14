@@ -316,18 +316,30 @@ static gboolean update_datescreen(gpointer data){
 	//time tracking and screensaver
 	if(!NACHTS && local->tm_hour >= 23 && local->tm_hour <=4){
 		NACHTS=true;
+		if(OFFSCREEN){
+			gtk_widget_hide(GTK_WIDGET(window_off1));
+#ifndef demo
+			BACKLIGHTAUS();
+#endif
+			gtk_widget_show(GTK_WIDGET(window_black));
+		}
 	}
 	else if(NACHTS && local->tm_hour < 23 && local->tm_hour >4){
 		NACHTS=false;
+			gtk_widget_show(GTK_WIDGET(window_off1));
+#ifndef demo
+			BACKLIGHTAN();
+#endif
+			gtk_widget_hide(GTK_WIDGET(window_black));
 	}
-	if(!OFFSCREEN && NACHTS && counter_off >= 3600){
+	if(!OFFSCREEN && NACHTS && counter_off >= 1800){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_black));
 #ifndef demo
 		BACKLIGHTAUS();
 #endif
 	}
-	else if(!OFFSCREEN && !NACHTS && counter_off >= 3600){
+	else if(!OFFSCREEN && !NACHTS && counter_off >= 1800){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
 	}
