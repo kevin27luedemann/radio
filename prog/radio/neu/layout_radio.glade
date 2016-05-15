@@ -260,6 +260,7 @@ Radio
                 <property name="lines">1</property>
                 <attributes>
                   <attribute name="font-desc" value="Cabin Semi-Bold 70"/>
+                  <attribute name="foreground" value="#ffffffffffff"/>
                 </attributes>
               </object>
               <packing>
@@ -278,6 +279,7 @@ Radio
                 <property name="track_visited_links">False</property>
                 <attributes>
                   <attribute name="font-desc" value="Cabin Semi-Bold 25"/>
+                  <attribute name="foreground" value="#ffffffffffff"/>
                 </attributes>
               </object>
               <packing>
