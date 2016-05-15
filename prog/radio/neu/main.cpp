@@ -137,8 +137,8 @@ int main(int argc, char* argv[])
 
 	label_track		= gtk_builder_get_object(builder_main, "label_track");
 	label_date		= gtk_builder_get_object(builder_main, "label_date");
-	label_off_dat	= gtk_builder_get_object(builder_main, "label_off_dat");
-	label_off_uhr	= gtk_builder_get_object(builder_main, "label_off_uhr");
+	label_off_dat	= gtk_builder_get_object(builder_main, "label_off_dat1");
+	label_off_uhr	= gtk_builder_get_object(builder_main, "label_off_uhr1");
 
 	window_off1		= gtk_builder_get_object(builder_main, "window_off1");
 	button_screen_on1 = gtk_builder_get_object(builder_main, "button_screen_on1");
@@ -187,7 +187,7 @@ static void button_play(GtkWidget *widget, gpointer data){
 		system("mpc stop");
 	}
 	else{
-		system("/usr/scripte/wetter.sh radio");
+		system("/usr/scripte/wetter.sh radio &");
 	}
 	free(buffer);
 	fclose(file);
