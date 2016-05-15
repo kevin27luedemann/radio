@@ -12,8 +12,9 @@ all: $(NAME).$(ENDUNG)
 $(NAME).$(ENDUNG): $(SRCS)
 	$(CC) $(CFLAGS) $(SRCS) $(GTKFLAGS) $(WIRINGFLAG)
 
-$(NAME).$(ENDUNG)demo: $(SRCS)
+demo: $(SRCS)
 	$(CC) $(CFLAGS) $(SRCS) $(GTKFLAGS) # $(WIRINGFLAG)
+	./$(NAME).$(ENDUNG)
 
 install: $(NAME).$(ENDUNG)
 	mv $(NAME).$(ENDUNG) radio;

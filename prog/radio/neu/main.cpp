@@ -75,8 +75,11 @@ int main(int argc, char* argv[])
 
 	//load Builderfile and start buildung window
 	builder_main = gtk_builder_new();
-	//gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+#ifndef demo
 	gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
+#else
+	gtk_builder_add_from_file(builder_main, "layout_radio.glade", NULL);
+#endif
 
 	//get css provider
 	GtkCssProvider *provider;
@@ -94,26 +97,28 @@ int main(int argc, char* argv[])
 	gtk_css_provider_load_from_data (GTK_CSS_PROVIDER(provider),
                                    	"GtkButton#button-screen-on {\n"
 												"	border-image: none;\n"
+												"	border-color: #000000;\n"
 												"	background-image: none;\n"
                                    	"	background-color: #000000;\n"
 												"	color: #ffffff;\n"
                                    	"}\n"
 												"GtkWindow#window-black {\n"
 												"	border-image: none;\n"
-												"	border-color: black;\n"
+												"	border-color: #000000;\n"
 												"	background-image: none;\n"
                                    	"	background-color: #000000;\n"
 												"	color: #ffffff;\n"
 												"}\n"
                                    	"GtkButton#button-screen-on1 {\n"
 												"	border-image: none;\n"
+												"	border-color: #000000;\n"
 												"	background-image: none;\n"
                                    	"	background-color: #000000;\n"
 												"	color: #ffffff;\n"
                                    	"}\n"
 												"GtkWindow#window-off1 {\n"
 												"	border-image: none;\n"
-												"	border-color: black;\n"
+												"	border-color: #000000;\n"
 												"	background-image: none;\n"
                                    	"	background-color: #000000;\n"
 												"	color: #ffffff;\n"
@@ -122,7 +127,6 @@ int main(int argc, char* argv[])
 
 	g_object_unref (provider);
 
-	//gtk_builder_add_from_file(builder_main, "/usr/bin/piradio/layout_radio.glade", NULL);
 	window_main	= gtk_builder_get_object(builder_main, "main_radio");
 	g_signal_connect(window_main, "destroy", G_CALLBACK(gtk_main_quit),NULL);
 
