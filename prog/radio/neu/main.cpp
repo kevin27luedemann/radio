@@ -22,6 +22,7 @@
 bool LICHTAN;
 bool OFFSCREEN;
 bool NACHTS;
+bool PLAYING;
 unsigned int counter_off;
 
 static void button_play(GtkWidget *widget, gpointer data);
@@ -65,6 +66,7 @@ int main(int argc, char* argv[])
 #endif
 	OFFSCREEN	= false;
 	NACHTS = false;
+	PLAYING = false;
 	counter_off = 0;
 
 	system("mkdir -p /tmp/piradio");
@@ -180,21 +182,12 @@ int main(int argc, char* argv[])
 //Buttons
 static void button_play(GtkWidget *widget, gpointer data){
 #ifndef demo
-	system("mpc status | grep \"playing\" > /tmp/piradio/testplay.txt ");
-	FILE *file;
-	char *buffer;
-	buffer = (char *) malloc(sizeof(char));
-	buffer[0]=' ';
-	file = fopen("/tmp/piradio/testplay.txt", "r");
-	fread(buffer, 1, 1, file);
-	if(buffer[0] == '['){
+	if(PLAYING){
 		system("mpc stop");
 	}
 	else{
-		system("/usr/scripte/wetter.sh radio &");
+		system("/usr/scripte/wetter.sh radio");
 	}
-	free(buffer);
-	fclose(file);
 #else
 	//system("/usr/scripte/wetter.sh");	
 	system("echo play");
@@ -316,7 +309,23 @@ static gboolean update_datescreen(gpointer data){
 	struct tm *local;
 	time(&timer);
 	local = localtime(&timer);
-
+	
+	//Check playstatus
+	system("mpc status | grep \"playing\" > /tmp/piradio/testplay.txt ");
+	FILE *file;
+	char *buffer;
+	buffer = (char *) malloc(sizeof(char));
+	buffer[0]=' ';
+	file = fopen("/tmp/piradio/testplay.txt", "r");
+	fread(buffer, 1, 1, file);
+	if(buffer[0] == '['){
+		PLAYING = true;
+	}
+	else{
+		PLAYING = false;
+	}
+	free(buffer);
+	fclose(file);
 	//time tracking and screensaver
 	if(!NACHTS && ( local->tm_hour >= 23 || local->tm_hour<=4)){
 		NACHTS=true;
@@ -338,14 +347,14 @@ static gboolean update_datescreen(gpointer data){
 			gtk_widget_hide(GTK_WIDGET(window_black));
 		}
 	}
-	if(!OFFSCREEN && NACHTS && counter_off >= 780){
+	if(!OFFSCREEN && NACHTS && !PLAYING && counter_off >= 780){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
 #ifndef demo
 		BACKLIGHTAUS();
 #endif
 	}
-	else if(!OFFSCREEN && !NACHTS && counter_off >= 780){
+	else if(!OFFSCREEN && !NACHTS && !PLAYING && counter_off >= 780){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
 	}
