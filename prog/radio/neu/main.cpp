@@ -40,10 +40,13 @@ char* asct(const struct tm *timeptr, int auswahl);
 GtkBuilder	*builder_main;
 GObject		*window_main, *button, *label_track, *label_date;
 GObject		*window_off1, *label_off_dat, *label_off_uhr, *button_screen_on1;
+GObject		*label_off_temperatur, *label_off_humidity;
 GObject		*window_black, *button_screen_on;
 
 GdkRGBA black = {0, 0, 0, 1};
 GdkRGBA white = {1, 1, 1, 1};
+
+double temperatur, feuchte;
 
 int main(int argc, char* argv[])
 {
@@ -68,6 +71,8 @@ int main(int argc, char* argv[])
 	NACHTS = false;
 	PLAYING = false;
 	counter_off = 0;
+	temperatur = 0;
+	feuchte = 0;
 
 	system("mkdir -p /tmp/piradio");
 	system("chmod 777 /tmp/piradio");
@@ -145,6 +150,8 @@ int main(int argc, char* argv[])
 	label_date		= gtk_builder_get_object(builder_main, "label_date");
 	label_off_dat	= gtk_builder_get_object(builder_main, "label_off_dat1");
 	label_off_uhr	= gtk_builder_get_object(builder_main, "label_off_uhr1");
+	label_off_temperatur	= gtk_builder_get_object(builder_main, "label_off_temperatur");
+	label_off_humidity	= gtk_builder_get_object(builder_main, "label_off_humidity");
 
 	window_off1		= gtk_builder_get_object(builder_main, "window_off1");
 	button_screen_on1 = gtk_builder_get_object(builder_main, "button_screen_on1");
@@ -239,6 +246,7 @@ static gboolean update_trackscreen(gpointer data){
 		gtk_widget_hide(GTK_WIDGET(window_off1));
 		gtk_widget_show(GTK_WIDGET(window_black));
 		LICHTAN = false;
+		OFFSCREEN = true;
 	}
 	else if (!digitalRead(BUTTONBACKLIGHT) && !LICHTAN && !pressed ){
 		pressed = true;
@@ -249,6 +257,7 @@ static gboolean update_trackscreen(gpointer data){
 		gtk_widget_hide(GTK_WIDGET(window_off1));
 		gtk_widget_hide(GTK_WIDGET(window_black));
 		LICHTAN = true;
+		OFFSCREEN = false;
 	}
 	//Check if screen off Button pressed
 	if(!digitalRead(BUTTONBLACKSCREEN) && LICHTAN && !pressed1 && !OFFSCREEN){
@@ -256,6 +265,7 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && !OFFSCREEN){
 		pressed1 = false;
+		BACKLIGHTAN();
 		gtk_widget_hide(GTK_WIDGET(window_black));
 		gtk_widget_show(GTK_WIDGET(window_off1));
 		OFFSCREEN = true;
@@ -265,6 +275,7 @@ static gboolean update_trackscreen(gpointer data){
 	}
 	else if (digitalRead(BUTTONBLACKSCREEN) && LICHTAN && pressed1 && OFFSCREEN){
 		pressed1 = false;
+		BACKLIGHTAN();
 		gtk_widget_hide(GTK_WIDGET(window_black));
 		gtk_widget_hide(GTK_WIDGET(window_off1));
 		OFFSCREEN = false;
@@ -326,6 +337,63 @@ static gboolean update_datescreen(gpointer data){
 	}
 	free(buffer);
 	fclose(file);
+
+	//Get Temperatur and humidity
+#ifdef demo
+	file = fopen("/home/luedemann/.wetter.status", "r");
+#else
+	file = fopen("/home/pi/.wetter.status", "r");
+#endif
+	bool weiter_status = true, weiter_status_2 = true;;
+	int counter_wetter = 0, counter_hilf = 0;
+	long filesize;
+	fseek(file, 0, SEEK_END);
+	filesize = ftell(file);
+	rewind(file);
+	buffer = (char *) malloc(sizeof(char)*filesize);
+	buffer[0]='\0';
+	fread(buffer, 1, filesize, file);
+
+	while(weiter_status_2 && counter_wetter != filesize){
+		if(buffer[counter_wetter] == '#' && weiter_status){
+			counter_hilf = counter_wetter;
+			temperatur  = (buffer[counter_wetter-1]-'0')*0.01;
+			temperatur += (buffer[counter_wetter-2]-'0')*0.1;
+			temperatur += (buffer[counter_wetter-4]-'0')*1.0;
+			if(counter_wetter-5 == -1){
+				weiter_status = false;
+			}
+			else if(buffer[counter_wetter-5] == '-'){
+				temperatur *= (-1);
+			}
+			else {
+				temperatur += (buffer[counter_wetter-5]-'0')*10.0;
+			}
+			weiter_status = false;
+		}
+		else if(buffer[counter_wetter] == '#' && !weiter_status){
+			feuchte = (buffer[counter_wetter-1]-'0')*0.01;
+			feuchte += (buffer[counter_wetter-2]-'0')*0.1;
+			feuchte += (buffer[counter_wetter-4]-'0')*1.0;
+			if(counter_wetter-5-counter_hilf == 0){
+				weiter_status_2 = false;
+			}
+			else {
+				feuchte += (buffer[counter_wetter-5]-'0')*10.0;
+			}
+		}
+		counter_wetter++;
+	}
+
+	fclose(file);
+	free(buffer);
+	char tempera[10];
+	char humid[10];
+	sprintf(tempera,"%.02f°C",temperatur);
+	sprintf(humid,"%.02f%%",feuchte);
+	gtk_label_set_text(GTK_LABEL(label_off_temperatur),tempera);
+	gtk_label_set_text(GTK_LABEL(label_off_humidity),humid);
+
 	//time tracking and screensaver
 	if(!NACHTS && ( local->tm_hour >= 23 || local->tm_hour<=4)){
 		NACHTS=true;
