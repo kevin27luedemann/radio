@@ -389,8 +389,8 @@ static gboolean update_datescreen(gpointer data){
 	free(buffer);
 	char tempera[10];
 	char humid[10];
-	sprintf(tempera,"%.02f°C",temperatur);
-	sprintf(humid,"%.02f%%",feuchte);
+	sprintf(tempera,"%.2f°C",temperatur);
+	sprintf(humid,"%.2f%%",feuchte);
 	gtk_label_set_text(GTK_LABEL(label_off_temperatur),tempera);
 	gtk_label_set_text(GTK_LABEL(label_off_humidity),humid);
 
