@@ -353,6 +353,11 @@ static gboolean update_datescreen(gpointer data){
 	buffer = (char *) malloc(sizeof(char)*filesize);
 	buffer[0]='\0';
 	fread(buffer, 1, filesize, file);
+	if (buffer[0]=='#'){
+		temperatur = 0.0;
+		feuchte = 0.0;
+		weiter_status_2 = false;
+	}
 
 	while(weiter_status_2 && counter_wetter != filesize){
 		if(buffer[counter_wetter] == '#' && weiter_status){
@@ -389,8 +394,8 @@ static gboolean update_datescreen(gpointer data){
 	free(buffer);
 	char tempera[10];
 	char humid[10];
-	sprintf(tempera,"%.2f°C",temperatur);
-	sprintf(humid,"%.2f%%",feuchte);
+	sprintf(tempera,"%.01f°C",temperatur);
+	sprintf(humid,"%.01f%%",feuchte);
 	gtk_label_set_text(GTK_LABEL(label_off_temperatur),tempera);
 	gtk_label_set_text(GTK_LABEL(label_off_humidity),humid);
 
