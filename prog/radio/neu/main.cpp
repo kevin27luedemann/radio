@@ -327,7 +327,7 @@ static gboolean update_datescreen(gpointer data){
 	free(buffer);
 	fclose(file);
 	//time tracking and screensaver
-	if(!NACHTS && ( local->tm_hour >= 23 || local->tm_hour<=4)){
+	if(!NACHTS && ( local->tm_hour >= 23 || local->tm_hour<=5)){
 		NACHTS=true;
 		if(OFFSCREEN){
 			gtk_widget_hide(GTK_WIDGET(window_off1));
@@ -337,7 +337,7 @@ static gboolean update_datescreen(gpointer data){
 			gtk_widget_show(GTK_WIDGET(window_black));
 		}
 	}
-	else if(NACHTS && (local->tm_hour < 23 && local->tm_hour >4)){
+	else if(NACHTS && (local->tm_hour < 23 && local->tm_hour >5)){
 		NACHTS=false;
 		if(OFFSCREEN){
 			gtk_widget_show(GTK_WIDGET(window_off1));
@@ -377,7 +377,7 @@ char* asct(const struct tm *timeptr, int auswahl)
     "So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"
   };
   static const char mon_name[][4] = {
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+    "Jan", "Feb", "Mar", "Apr", "Mai", "Jun",
     "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"
   };
   static char result[24];
