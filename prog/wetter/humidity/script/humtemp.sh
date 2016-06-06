@@ -3,7 +3,7 @@
 datum=`date +"%d.%m.%y %H:%M:%S"`
  
 GPIO=7
-INPUT=$(sudo /home/pi/projekt/humidity/lol_dht22/loldht $GPIO | grep "Temperature")
+INPUT=$(sudo /home/pi/.lol_dht22/loldht $GPIO | grep "Temperature")
 HUM=$(echo $INPUT|cut -d " " -f3)
 TEMP=$(echo $INPUT|cut -d " " -f7)
 
