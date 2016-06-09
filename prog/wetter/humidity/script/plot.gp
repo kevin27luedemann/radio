@@ -15,7 +15,9 @@ set xlabel "Zeit"
 
 set output DATUM
 set multiplot layout 2,1
+set yrange [15:30]
 p ".wetter.log" u 1:3 w l t "Temperatur [°C]"
+set yrange [40:70]
 p ".wetter.log" u 1:4 w l t "rel. Luftfeuchte [%]"
 unset multiplot
 set output
