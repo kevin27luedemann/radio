@@ -1,7 +1,10 @@
 #include <avr/io.h>
 #include <stdlib.h>
+#include <stdio.h>
 #define F_CPU 8000000
 #include <util/delay.h>
+#include "BMP180.h"
+BMP180 druck;
 
 extern "C"{
 	#include "DHT22int.c"
@@ -51,6 +54,9 @@ void init(){
 	
 	//init LED Ports
 	DDRB = (1<<DDB0) | (1<<DDB1);
+	
+	//Init BMP180
+	druck.bmp180_getcalibration();
 
 	sei();
 }
@@ -67,6 +73,7 @@ void check_weather(){
 	status = DHT22_CheckStatus(&sensor_data);
  
 	if (status == DHT_DATA_READY){
+		druck.bmp180_getaltitude();
 		// Do something with the data.
 		if(sensor_data.temperature_integral<0){
 			transmit_values('-');
@@ -84,7 +91,20 @@ void check_weather(){
 		transmit_values('0'+hum%10);
 		transmit_values('.');
 		transmit_values('0'+sensor_data.humidity_decimal);
+		transmit_values('\t');
 		DHT22_StartReading();
+		transmit_values('0'+(int)druck.pressure/1000);
+		transmit_values('0'+(int)druck.pressure%1000/100);
+		transmit_values('0'+(int)druck.pressure%100/10);
+		transmit_values('0'+(int)druck.pressure%10);
+		transmit_values('.');
+		transmit_values('0'+(int)(druck.pressure*10.0)%10);
+		/*
+		char buffer[20];
+		uint8_t anzahl = sprintf(buffer,"%4.2f",druck.pressure);
+		for(int i=0;i<anzahl;i++){
+			transmit_values(buffer[i]);
+		}*/
    }
    else if (status == DHT_ERROR_CHECKSUM){
 		// Do something if there is a Checksum error

@@ -1,6 +1,7 @@
 TARGET=main
 MCU=atmega328p
-SOURCES=$(TARGET).cpp
+SOURCES=$(TARGET).cpp  BMP180.cpp I2C.cpp
+#SOURCES=$(shell find . -type f -name '*.cpp')
 
 PROGRAMMER=stk500
 #auskommentieren für automatische Wahl
@@ -8,9 +9,9 @@ PORT=-P/dev/ttyUSB0
 BAUD=-B11600
 
 #Ab hier nichts verändern
-OBJECTS=$(SOURCES:.c=.o)
-CFLAGS=-c -2s
-LDFLAGS=
+OBJECTS=$(SOURCES:.cpp=.o)
+CFLAGS=-c -O
+LDFLAGS=-lm
 
 all: hex eeprom
 
@@ -27,7 +28,7 @@ $(TARGET)_eeprom.hex: $(TARGET).elf
 $(TARGET).elf: $(OBJECTS)
 	avr-g++ $(LDFLAGS) -mmcu=$(MCU) $(OBJECTS) -o $(TARGET).elf
 
-.c.o:
+%.o : %.cpp
 	avr-g++ $(CFLAGS) -mmcu=$(MCU) $< -o $@
 
 size:

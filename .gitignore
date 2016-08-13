@@ -8,5 +8,9 @@ lol_dht22/
 *-blx.bib
 *.bbl
 *.swp
+*.hex
+*.o
+*.elf
+*_eeprom.hex
 radio
 main
