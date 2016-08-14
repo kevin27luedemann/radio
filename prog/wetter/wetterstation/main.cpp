@@ -3,18 +3,86 @@
 #include <stdio.h>
 #define F_CPU 8000000
 #include <util/delay.h>
+#include <avr/interrupt.h>
 #include "BMP180.h"
 BMP180 druck;
 
+#define DDR_DHT22 DDRD
+#define PORT_DHT22 PORTD
+#define PIN_DHT22 PIND
+#include "DHT22.h"
+DHT22 dht22(2);
+/*
 extern "C"{
 	#include "DHT22int.c"
-}
+}*/
 
 void wait(int number);
 void init();
 void transmit_values(unsigned char data);
-void check_weather();
+void send_weather();
 
+#define KONTUNUIRLICHER_MODUS 0
+uint8_t FLAG_REG;
+
+ISR(USART_RX_vect){
+	uint8_t temp = UDR0;
+	static char status;
+	static uint8_t counter;
+	if(counter == 0){
+		switch (temp)
+		{
+			case 'c': 
+				status = temp;
+				counter++;
+				break;
+			case 'd':
+				status = temp;
+				counter++;
+				break;
+			case 'p':
+				transmit_values('p');
+				transmit_values('\n');
+				transmit_values('\r');
+				break;
+			default:
+				break;
+		}
+	}
+	else if(counter == 1 && status == 'c'){
+		switch (temp)
+		{
+			case 'c':
+				FLAG_REG |= (1<<KONTUNUIRLICHER_MODUS);
+				counter = 0;
+				break;
+			case 's':
+				FLAG_REG &= ~(1<<KONTUNUIRLICHER_MODUS);
+				counter = 0;
+				break;
+			default:
+				counter = 0;
+				break;
+		}
+	}
+	else if(counter == 1 && status == 'd'){
+		switch (temp)
+		{
+			case 'a':
+				if(!(FLAG_REG&(1<<KONTUNUIRLICHER_MODUS))){
+					send_weather();
+				}
+				counter = 0;
+				break;
+			default:
+				counter = 0;
+				break;
+		}
+	}
+	else {
+		counter = 0;
+	}
+}
 
 int main(){
 	init();
@@ -26,11 +94,9 @@ int main(){
 		wait(10);
 		PORTB |= (1<<PORTB1);
 		PORTB &= ~(1<<PORTB0);
-		transmit_values('a');
-		transmit_values('\t');
-		check_weather();
-		transmit_values('\n');
-		transmit_values('\r');
+		if((FLAG_REG&(1<<KONTUNUIRLICHER_MODUS))){
+			send_weather();
+		}
 	}
 	return 0;
 }
@@ -45,12 +111,8 @@ void init(){
 	//init UASART
 	UBRR0H = 0;
 	UBRR0L = 51; //9600 BAUD
-	UCSR0B = (0<<RXEN0) | (1<<TXEN0);
+	UCSR0B = (1<<RXEN0) | (1<<TXEN0) | (1<<RXCIE0);
 	UCSR0C = (1<<UCSZ01) | (1<<UCSZ00);
-	
-	//init dht22
-	DHT22_Init();
-	DHT22_StartReading();
 	
 	//init LED Ports
 	DDRB = (1<<DDB0) | (1<<DDB1);
@@ -58,6 +120,7 @@ void init(){
 	//Init BMP180
 	druck.bmp180_getcalibration();
 
+	FLAG_REG = 0;
 	sei();
 }
 
@@ -67,53 +130,34 @@ void transmit_values(unsigned char data){
 	UDR0 = data;
 }
 
-void check_weather(){
-	DHT22_STATE_t status;
-	DHT22_DATA_t sensor_data;
-	status = DHT22_CheckStatus(&sensor_data);
- 
-	if (status == DHT_DATA_READY){
-		druck.bmp180_getaltitude();
-		// Do something with the data.
-		if(sensor_data.temperature_integral<0){
-			transmit_values('-');
-			transmit_values('0'+(-1)*sensor_data.temperature_integral/10);
-		}
-		else{
-			transmit_values('0'+sensor_data.temperature_integral/10);
-		}
-		transmit_values('0'+sensor_data.temperature_integral%10);
-		transmit_values('.');
-		transmit_values('0'+sensor_data.temperature_decimal);
-		transmit_values('\t');
-		uint8_t hum = sensor_data.humidity_integral+15; //kompensiere den Drift
-		transmit_values('0'+hum/10); 
-		transmit_values('0'+hum%10);
-		transmit_values('.');
-		transmit_values('0'+sensor_data.humidity_decimal);
-		transmit_values('\t');
-		DHT22_StartReading();
-		transmit_values('0'+(int)druck.pressure/1000);
-		transmit_values('0'+(int)druck.pressure%1000/100);
-		transmit_values('0'+(int)druck.pressure%100/10);
-		transmit_values('0'+(int)druck.pressure%10);
-		transmit_values('.');
-		transmit_values('0'+(int)(druck.pressure*10.0)%10);
-		/*
-		char buffer[20];
-		uint8_t anzahl = sprintf(buffer,"%4.2f",druck.pressure);
-		for(int i=0;i<anzahl;i++){
-			transmit_values(buffer[i]);
-		}*/
-   }
-   else if (status == DHT_ERROR_CHECKSUM){
-		// Do something if there is a Checksum error
-   }
-   else if (status == DHT_ERROR_NOT_RESPOND){
-   	// Do something if the sensor did not respond
-   }
+void send_weather(){
+	druck.bmp180_getaltitude();
+	dht22.get_values();
+	if(dht22.temperature_integral<0){
+		transmit_values('-');
+		transmit_values('0'+(-1)*dht22.temperature_integral/10);
+	}
+	else{
+		transmit_values('+');
+		transmit_values('0'+dht22.temperature_integral/10);
+	}
+	transmit_values('0'+dht22.temperature_integral%10);
+	transmit_values('.');
+	transmit_values('0'+dht22.temperature_decimal);
 	transmit_values('\t');
-	transmit_values('0'+status);
-
+	transmit_values('0'+dht22.humidity_integral/100); 
+	transmit_values('0'+dht22.humidity_integral/10); 
+	transmit_values('0'+dht22.humidity_integral%10);
+	transmit_values('.');
+	transmit_values('0'+dht22.humidity_decimal);
+	transmit_values('\t');
+	transmit_values('0'+(int)druck.pressure/1000);
+	transmit_values('0'+(int)druck.pressure%1000/100);
+	transmit_values('0'+(int)druck.pressure%100/10);
+	transmit_values('0'+(int)druck.pressure%10);
+	transmit_values('.');
+	transmit_values('0'+(int)(druck.pressure*10.0)%10);
+	transmit_values('\n');
+	transmit_values('\r');
 }
 

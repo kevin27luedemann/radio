@@ -1,6 +1,6 @@
 TARGET=main
 MCU=atmega328p
-SOURCES=$(TARGET).cpp  BMP180.cpp I2C.cpp
+SOURCES=$(TARGET).cpp  BMP180.cpp I2C.cpp DHT22.cpp
 #SOURCES=$(shell find . -type f -name '*.cpp')
 
 PROGRAMMER=stk500
