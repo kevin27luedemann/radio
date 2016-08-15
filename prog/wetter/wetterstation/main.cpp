@@ -131,8 +131,9 @@ void transmit_values(unsigned char data){
 }
 
 void send_weather(){
+	uint8_t status;
 	druck.bmp180_getaltitude();
-	dht22.get_values();
+	status = dht22.get_values();
 	if(dht22.temperature_integral<0){
 		transmit_values('-');
 		transmit_values('0'+(-1)*dht22.temperature_integral/10);
@@ -157,6 +158,8 @@ void send_weather(){
 	transmit_values('0'+(int)druck.pressure%10);
 	transmit_values('.');
 	transmit_values('0'+(int)(druck.pressure*10.0)%10);
+	transmit_values('\t');
+	transmit_values('a'+status);
 	transmit_values('\n');
 	transmit_values('\r');
 }

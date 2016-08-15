@@ -3,17 +3,20 @@
 #ifndef __DHT22__
 #define __DHT22__
 #include <avr/io.h>
+#ifndef F_CPU
+	#define F_CPU 8000000
+#endif
 #include <util/delay.h>
 #include <avr/interrupt.h>
 
 #ifndef DDR_DHT22
-	#define DDR_DHT22 DDRB
+	#define DDR_DHT22 DDRD
 #endif
 #ifndef PORT_DHT22
-	#define PORT_DHT22 PORTB
+	#define PORT_DHT22 PORTD
 #endif
 #ifndef PIN_DHT22
-	#define PIN_DHT22 PINB
+	#define PIN_DHT22 PIND
 #endif
 class DHT22
 {
@@ -42,6 +45,7 @@ private:
 	DHT22(const DHT22 &c);
 	DHT22& operator=(const DHT22 &c);
 	uint8_t read_sensor();
+	uint8_t count_seconds();
 
 protected:
 
