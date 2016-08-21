@@ -60,7 +60,7 @@
 
 /* Pin definition (change accordingly) 
    The pin must be a INT pin. Pin Change Interrupt is not sopported yet. */
-#define DHT22_PIN PIND2 // INT0
+#define DHT22_PIN PIND3 // INT0
 #define DHT22_DDR DDRD
 #define DHT22_PORT PORTD
 
@@ -76,15 +76,15 @@
 #define TIMER_COUNTER_REGISTER			TCNT2			// Timer counter register
 #define TIMER_START						TCCR2B = (1 << CS21); // Code to start timer with 1MHz clock
 #define TIMER_STOP						TCCR2B = 0; // Code to stop the timer by writing 0 in prescaler bits.
-#define EXT_INTERRUPT_DISABLE			EIMSK &= ~(1 << INT0); // Code to disable the external interrupt used.
-#define EXT_INTERRUPT_ENABLE			EIMSK |= (1 << INT0);  // Code to enable the external interrupt used.
-#define EXT_INTERRUPT_SET_RISING_EDGE	EICRA |= (1 << ISC01) | (1 << ISC00); // Code to set the interrupt to rising edge
-#define EXT_INTERRUPT_SET_FALLING_EDGE	EICRA |= (1 << ISC01); EICRA &= ~(1 << ISC00);  // Code to set the interrupt to falling edge
-#define EXT_INTERRUPT_CLEAR_FLAG		EIFR |= (1 << INTF0);  // Code to clear the external interrupt flag.
+#define EXT_INTERRUPT_DISABLE			EIMSK &= ~(1 << INT1); // Code to disable the external interrupt used.
+#define EXT_INTERRUPT_ENABLE			EIMSK |= (1 << INT1);  // Code to enable the external interrupt used.
+#define EXT_INTERRUPT_SET_RISING_EDGE	EICRA |= (1 << ISC11) | (1 << ISC10); // Code to set the interrupt to rising edge
+#define EXT_INTERRUPT_SET_FALLING_EDGE	EICRA |= (1 << ISC11); EICRA &= ~(1 << ISC10);  // Code to set the interrupt to falling edge
+#define EXT_INTERRUPT_CLEAR_FLAG		EIFR |= (1 << INTF1);  // Code to clear the external interrupt flag.
 
 /* Interrupt vectors. Change accordingly */
 #define TIMER_CTC_VECTOR				TIMER2_COMPA_vect
-#define EXT_INTERRUPT_VECTOR			INT0_vect
+#define EXT_INTERRUPT_VECTOR			INT1_vect
 
 class DHT22
 {
