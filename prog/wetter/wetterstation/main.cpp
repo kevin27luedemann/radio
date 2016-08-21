@@ -88,10 +88,10 @@ int main(){
 	init();
 	
 	while(true){
-		wait(10);
+		wait(20);
 		PORTB |= (1<<PORTB0);
 		PORTB &= ~(1<<PORTB1);
-		wait(10);
+		wait(20);
 		PORTB |= (1<<PORTB1);
 		PORTB &= ~(1<<PORTB0);
 		if((FLAG_REG&(1<<KONTUNUIRLICHER_MODUS))){
