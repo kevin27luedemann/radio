@@ -29,10 +29,6 @@ ISR(TIMER_CTC_VECTOR){
 ISR(EXT_INTERRUPT_VECTOR){
 	dht22.ISR_INT_ROUTINE();
 }
-/*
-extern "C"{
-	#include "DHT22int.c"
-}*/
 
 void wait(int number);
 void init();
