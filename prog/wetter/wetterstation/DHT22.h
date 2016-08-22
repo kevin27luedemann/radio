@@ -129,6 +129,8 @@ public:
 	~DHT22();
 	uint8_t DHT22_StartReading(void);
 	uint8_t DHT22_CheckStatus();
+	void ISR_INT_ROUTINE();
+	void ISR_TIMER_TOUTINE();
 
 private:
 	DHT22(const DHT22 &c);
