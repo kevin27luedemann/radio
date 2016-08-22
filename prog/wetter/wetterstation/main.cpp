@@ -11,6 +11,12 @@ BMP180 druck;
 DHT22 dht22_I(15, PD2, &DDRD, &PORTD, INT0, ISC00, ISC01, INTF0, &EIMSK, &EICRA, &EIFR, CS21, &OCR2A, &TCNT2, &TCCR2B);
 DHT22 dht22_O(15, PD3, &DDRD, &PORTD, INT1, ISC10, ISC11, INTF1, &EIMSK, &EICRA, &EIFR, CS21, &OCR2A, &TCNT2, &TCCR2B);
 
+#define KONTUNUIRLICHER_MODUS 0
+#define SINGLE_MODUS 1
+#define INDOR_SENSOR 2
+uint8_t FLAG_REG;
+uint8_t status;
+
 /*
  * Timer Compare Match interrupt handler
  *
@@ -18,7 +24,12 @@ DHT22 dht22_O(15, PD3, &DDRD, &PORTD, INT1, ISC10, ISC11, INTF1, &EIMSK, &EICRA,
  * Using a 8bit timer with prescaler such that a timer tick corresponds to 1us (freq. = 1MHz).
  */
 ISR(TIMER2_COMPA_vect){
-	dht22_I.ISR_TIMER_TOUTINE();
+	if(FLAG_REG&(1<<INDOR_SENSOR)){
+		dht22_I.ISR_TIMER_TOUTINE();
+	}
+	else{
+		dht22_O.ISR_TIMER_TOUTINE();
+	}
 }
 
 /*
@@ -39,9 +50,6 @@ void init();
 void transmit_values(unsigned char data);
 void send_weather();
 
-#define KONTUNUIRLICHER_MODUS 0
-uint8_t FLAG_REG;
-uint8_t status;
 
 ISR(USART_RX_vect){
 	uint8_t temp = UDR0;
@@ -59,7 +67,7 @@ ISR(USART_RX_vect){
 				counter++;
 				break;
 			case 'p':
-				transmit_values('p');
+				transmit_values(temp);
 				transmit_values('\n');
 				transmit_values('\r');
 				break;
@@ -88,7 +96,7 @@ ISR(USART_RX_vect){
 		{
 			case 'a':
 				if(!(FLAG_REG&(1<<KONTUNUIRLICHER_MODUS))){
-					send_weather();
+					FLAG_REG |= (1<<SINGLE_MODUS);
 				}
 				counter = 0;
 				break;
@@ -115,7 +123,10 @@ int main(){
 		if((FLAG_REG&(1<<KONTUNUIRLICHER_MODUS))){
 			send_weather();
 		}
-		status = dht22_I.DHT22_StartReading();
+		else if((FLAG_REG&(1<<SINGLE_MODUS))){
+			send_weather();
+			FLAG_REG &= ~(1<<SINGLE_MODUS);
+		}
 	}
 	return 0;
 }
@@ -127,6 +138,7 @@ void wait(int number){
 }
 
 void init(){
+	FLAG_REG = 0;
 	//init UASART
 	UBRR0H = 0;
 	UBRR0L = 51; //9600 BAUD
@@ -142,11 +154,7 @@ void init(){
 	//intialize timer0 for DHT22 Sensors
 	TCCR2A = (1 << WGM21);
 	TIMSK2 = (1 << OCIE2A);
-	
-	//starte erste Messung des dht22_I
-	dht22_I.DHT22_StartReading();
 
-	FLAG_REG = 0;
 	sei();
 }
 
@@ -158,7 +166,16 @@ void transmit_values(unsigned char data){
 
 void send_weather(){
 	druck.bmp180_getaltitude();
+	FLAG_REG |= (1<<INDOR_SENSOR);
+	status = dht22_I.DHT22_StartReading();
+	while(status != dht22_I.DHT_DATA_READY && status != dht22_I.DHT_ERROR_NOT_RESPOND && status != dht22_I.DHT_ERROR_CHECKSUM){
 	status = dht22_I.DHT22_CheckStatus();
+	}
+	FLAG_REG &= ~(1<<INDOR_SENSOR);
+	status = dht22_O.DHT22_StartReading();
+	while(status != dht22_O.DHT_DATA_READY && status != dht22_O.DHT_ERROR_NOT_RESPOND && status != dht22_O.DHT_ERROR_CHECKSUM){
+	status = dht22_O.DHT22_CheckStatus();
+	}
 	if(dht22_I.temperature_integral<0){
 		transmit_values('-');
 		transmit_values('0'+(-1)*dht22_I.temperature_integral/10);
@@ -205,7 +222,7 @@ void send_weather(){
 	//transmit_values('a'+status);
 	transmit_values('\n');
 	transmit_values('\r');
-	dht22_I.DHT22_StartReading();
+	//dht22_I.DHT22_StartReading();
 
 }
 
