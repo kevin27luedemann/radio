@@ -8,7 +8,8 @@
 BMP180 druck;
 
 #include "DHT22.h"
-DHT22 dht22(2);
+DHT22 dht22_I(15, PD2, &DDRD, &PORTD, INT0, ISC00, ISC01, INTF0, &EIMSK, &EICRA, &EIFR, CS21, &OCR2A, &TCNT2, &TCCR2B);
+DHT22 dht22_O(15, PD3, &DDRD, &PORTD, INT1, ISC10, ISC11, INTF1, &EIMSK, &EICRA, &EIFR, CS21, &OCR2A, &TCNT2, &TCCR2B);
 
 /*
  * Timer Compare Match interrupt handler
@@ -16,8 +17,8 @@ DHT22 dht22(2);
  * This handler is used to generate host start conditions (Periods P1 and P2).
  * Using a 8bit timer with prescaler such that a timer tick corresponds to 1us (freq. = 1MHz).
  */
-ISR(TIMER_CTC_VECTOR){
-	dht22.ISR_TIMER_TOUTINE();
+ISR(TIMER2_COMPA_vect){
+	dht22_I.ISR_TIMER_TOUTINE();
 }
 
 /*
@@ -26,8 +27,11 @@ ISR(TIMER_CTC_VECTOR){
  * The external interrupt is used to measure the width of a pulse and change
  * the state accordingly.
  */
-ISR(EXT_INTERRUPT_VECTOR){
-	dht22.ISR_INT_ROUTINE();
+ISR(INT0_vect){
+	dht22_I.ISR_INT_ROUTINE();
+}
+ISR(INT1_vect){
+	dht22_O.ISR_INT_ROUTINE();
 }
 
 void wait(int number);
@@ -111,7 +115,7 @@ int main(){
 		if((FLAG_REG&(1<<KONTUNUIRLICHER_MODUS))){
 			send_weather();
 		}
-		status = dht22.DHT22_StartReading();
+		status = dht22_I.DHT22_StartReading();
 	}
 	return 0;
 }
@@ -135,14 +139,12 @@ void init(){
 	//Init BMP180
 	druck.bmp180_getcalibration();
 
-	//Timer Einstellungen fuer DHT22 Sensor
-	TCCR2A = (1 << WGM21);   // Code to configure the timer in CTC mode.
-	TIMSK2 = (1 << OCIE2A);  // Code to enable Compare Match Interrupt
-	OCRA	 = 35;
-	TCCR2B = (1 << CS20); //no prescaler just interupt with about 1 MHz
+	//intialize timer0 for DHT22 Sensors
+	TCCR2A = (1 << WGM21);
+	TIMSK2 = (1 << OCIE2A);
 	
-	//starte erste Messung des dht22
-	dht22.DHT22_StartReading();
+	//starte erste Messung des dht22_I
+	dht22_I.DHT22_StartReading();
 
 	FLAG_REG = 0;
 	sei();
@@ -156,37 +158,54 @@ void transmit_values(unsigned char data){
 
 void send_weather(){
 	druck.bmp180_getaltitude();
-	status = dht22.DHT22_CheckStatus();
-	if(status == dht22.DHT_DATA_READY){
-		if(dht22.temperature_integral<0){
-			transmit_values('-');
-			transmit_values('0'+(-1)*dht22.temperature_integral/10);
-		}
-		else{
-			transmit_values('+');
-			transmit_values('0'+dht22.temperature_integral/10);
-		}
-		transmit_values('0'+dht22.temperature_integral%10);
-		transmit_values('.');
-		transmit_values('0'+dht22.temperature_decimal);
-		transmit_values('\t');
-		transmit_values('0'+dht22.humidity_integral/100); 
-		transmit_values('0'+dht22.humidity_integral/10); 
-		transmit_values('0'+dht22.humidity_integral%10);
-		transmit_values('.');
-		transmit_values('0'+dht22.humidity_decimal);
-		transmit_values('\t');
-		transmit_values('0'+(int)druck.pressure/1000);
-		transmit_values('0'+(int)druck.pressure%1000/100);
-		transmit_values('0'+(int)druck.pressure%100/10);
-		transmit_values('0'+(int)druck.pressure%10);
-		transmit_values('.');
-		transmit_values('0'+(int)(druck.pressure*10.0)%10);
-		transmit_values('\t');
-		transmit_values('a'+status);
-		transmit_values('\n');
-		transmit_values('\r');
-		dht22.DHT22_StartReading();
+	status = dht22_I.DHT22_CheckStatus();
+	if(dht22_I.temperature_integral<0){
+		transmit_values('-');
+		transmit_values('0'+(-1)*dht22_I.temperature_integral/10);
 	}
+	else{
+		transmit_values('+');
+		transmit_values('0'+dht22_I.temperature_integral/10);
+	}
+	transmit_values('0'+dht22_I.temperature_integral%10);
+	transmit_values('.');
+	transmit_values('0'+dht22_I.temperature_decimal);
+	transmit_values('\t');
+	if(dht22_O.temperature_integral<0){
+		transmit_values('-');
+		transmit_values('0'+(-1)*dht22_O.temperature_integral/10);
+	}
+	else{
+		transmit_values('+');
+		transmit_values('0'+dht22_O.temperature_integral/10);
+	}
+	transmit_values('0'+dht22_O.temperature_integral%10);
+	transmit_values('.');
+	transmit_values('0'+dht22_O.temperature_decimal);
+	transmit_values('\t');
+	transmit_values('0'+dht22_I.humidity_integral/100); 
+	transmit_values('0'+dht22_I.humidity_integral/10); 
+	transmit_values('0'+dht22_I.humidity_integral%10);
+	transmit_values('.');
+	transmit_values('0'+dht22_I.humidity_decimal);
+	transmit_values('\t');
+	transmit_values('0'+dht22_O.humidity_integral/100); 
+	transmit_values('0'+dht22_O.humidity_integral/10); 
+	transmit_values('0'+dht22_O.humidity_integral%10);
+	transmit_values('.');
+	transmit_values('0'+dht22_O.humidity_decimal);
+	transmit_values('\t');
+	transmit_values('0'+(int)druck.pressure/1000);
+	transmit_values('0'+(int)druck.pressure%1000/100);
+	transmit_values('0'+(int)druck.pressure%100/10);
+	transmit_values('0'+(int)druck.pressure%10);
+	transmit_values('.');
+	transmit_values('0'+(int)(druck.pressure*10.0)%10);
+	//transmit_values('\t');
+	//transmit_values('a'+status);
+	transmit_values('\n');
+	transmit_values('\r');
+	dht22_I.DHT22_StartReading();
+
 }
 
