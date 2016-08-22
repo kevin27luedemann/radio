@@ -134,6 +134,12 @@ void init(){
 	
 	//Init BMP180
 	druck.bmp180_getcalibration();
+
+	//Timer Einstellungen fuer DHT22 Sensor
+	TCCR2A = (1 << WGM21);   // Code to configure the timer in CTC mode.
+	TIMSK2 = (1 << OCIE2A);  // Code to enable Compare Match Interrupt
+	OCRA	 = 35;
+	TCCR2B = (1 << CS20); //no prescaler just interupt with about 1 MHz
 	
 	//starte erste Messung des dht22
 	dht22.DHT22_StartReading();
