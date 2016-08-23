@@ -1,7 +1,7 @@
 #!/bin/bash
 # grundlegende Zeitvariablen
 datum=`date +"%d.%m.%y"`
-datum=07.06.16
+datum=11.06.16
 
 #mv ~/.wetter.log ./
 

@@ -223,11 +223,16 @@ static void button_screen_on_CB(GtkWidget *widget, gpointer data){
 #endif
 	counter_off = 0;
 	OFFSCREEN = false;
+	LICHTAN = true;
 }
 static void button_screen_on1_CB(GtkWidget *widget, gpointer data){
 	gtk_widget_hide(GTK_WIDGET(window_off1));
 	counter_off = 0;
 	OFFSCREEN = false;
+#ifndef demo
+	BACKLIGHTAN();
+#endif
+	LICHTAN = true;
 }
 
 //Screenupdate funktion
@@ -269,6 +274,7 @@ static gboolean update_trackscreen(gpointer data){
 		gtk_widget_hide(GTK_WIDGET(window_black));
 		gtk_widget_show(GTK_WIDGET(window_off1));
 		OFFSCREEN = true;
+		LICHTAN = true;
 	}
 	else if (!digitalRead(BUTTONBLACKSCREEN) && LICHTAN && !pressed1 && OFFSCREEN){
 		pressed1 = true;
@@ -279,6 +285,7 @@ static gboolean update_trackscreen(gpointer data){
 		gtk_widget_hide(GTK_WIDGET(window_black));
 		gtk_widget_hide(GTK_WIDGET(window_off1));
 		OFFSCREEN = false;
+		LICHTAN = true;
 	}
 
 #endif
@@ -406,6 +413,7 @@ static gboolean update_datescreen(gpointer data){
 			gtk_widget_hide(GTK_WIDGET(window_off1));
 #ifndef demo
 			BACKLIGHTAUS();
+			LICHTAN = false;
 #endif
 			gtk_widget_show(GTK_WIDGET(window_black));
 		}
@@ -416,6 +424,7 @@ static gboolean update_datescreen(gpointer data){
 			gtk_widget_show(GTK_WIDGET(window_off1));
 #ifndef demo
 			BACKLIGHTAN();
+			LICHTAN = true;
 #endif
 			gtk_widget_hide(GTK_WIDGET(window_black));
 		}
