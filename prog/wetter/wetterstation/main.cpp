@@ -221,7 +221,7 @@ void send_weather(){
 	//transmit_values('\t');
 	//transmit_values('a'+status);
 	transmit_values('\n');
-	transmit_values('\r');
+//	transmit_values('\r');
 	//dht22_I.DHT22_StartReading();
 
 }
