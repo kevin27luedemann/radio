@@ -3,6 +3,6 @@ echo "da" > /dev/ttyUSB0
 while read -r line < /dev/ttyUSB0; do
    datum=`date +'%d.%m.%Y %H:%M:%S'`
 	echo -e $datum "\t" $line >> "/home/pi/.wetterstation.log"
-	sleep 60
+	sleep 20
 	echo "da" > /dev/ttyUSB0
 done
