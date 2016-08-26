@@ -466,14 +466,14 @@ static gboolean update_datescreen(gpointer data){
 			gtk_widget_hide(GTK_WIDGET(window_black));
 		}
 	}
-	if(!OFFSCREEN && NACHTS && !PLAYING && counter_off >= 780){
+	if(!OFFSCREEN && NACHTS && counter_off >= 420){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
 #ifndef demo
 		BACKLIGHTAUS();
 #endif
 	}
-	else if(!OFFSCREEN && !NACHTS && !PLAYING && counter_off >= 780){
+	else if(!OFFSCREEN && !NACHTS && counter_off >= 420){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
 	}
