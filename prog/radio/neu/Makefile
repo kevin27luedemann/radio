@@ -27,6 +27,8 @@ install: $(NAME).$(ENDUNG)
 	chmod 777 /tmp/piradio/;
 	echo "test radio" > /tmp/piradio/stat.txt;
 	chmod 777 /tmp/piradio/stat.txt; 
+	cp ../../wetter/auslesesoftware/pi_get_weather.sh /usr/scripte/
+	chmod 755 /usr/scripte/pi_get_weather.sh
 
 installTTS:
 	mkdir -p /usr/scripte/;
