@@ -364,12 +364,22 @@ static gboolean update_datescreen(gpointer data){
 	file = fopen("/home/pi/.wetterstation_current.log", "r");
 #endif
 	int Tag,Monat, Jahr,Stunde, Minute, Sekunde;
+	int integral = 0, decimal = 0;
 	//26.08.2016 09:05:43      +24.2 +24.2 057.8 055.4 1008.5
-	fscanf(file,"%d.%d.%d %d:%d:%d",&Tag,&Monat,&Jahr,&Stunde,&Minute,&Sekunde);
-	//fscanf(file,"\t %f \t",&temperatur_in);
+	fscanf(file,"%d.%d.%d %d:%d:%d ",&Tag,&Monat,&Jahr,&Stunde,&Minute,&Sekunde);
+	fscanf(file,"\t %d.%d",&integral,&decimal);
+	temperatur_in = (float)integral+ ((float)decimal)/10.0;
+	fscanf(file,"\t%d.%d",&integral,&decimal);
+	temperatur_out = (float)integral+ ((float)decimal)/10.0;
+	fscanf(file,"\t%d.%d",&integral,&decimal);
+	feuchte_in = (float)integral+ ((float)decimal)/10.0;
+	fscanf(file,"\t%d.%d",&integral,&decimal);
+	feuchte_out = (float)integral+ ((float)decimal)/10.0;
+	fscanf(file,"\t%d.%d",&integral,&decimal);
+	druck = (float)integral+ ((float)decimal)/10.0;
 	//fscanf(file,"%3f\t%4f\t%4f\t%5f",&temperatur_out,&feuchte_in,&feuchte_out,&druck);
-	printf("%d.%d.%d %d:%d:%d\t",Tag,Monat,Jahr,Stunde,Minute,Sekunde);
-	printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\n",temperatur_in,temperatur_out,feuchte_in,feuchte_out,druck);
+	//printf("%d.%d.%d %d:%d:%d\t",Tag,Monat,Jahr,Stunde,Minute,Sekunde);
+	//printf("%.1f\t%.1f\t%.1f\t%.1f\t%.1f\n",temperatur_in,temperatur_out,feuchte_in,feuchte_out,druck);
 	
 	
 	/*
