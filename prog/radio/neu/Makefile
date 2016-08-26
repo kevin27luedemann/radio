@@ -1,6 +1,6 @@
 NAME=main
 ENDUNG=exe
-CFLAGS=-g -Wall -o $(NAME).$(ENDUNG)
+CFLAGS=-g -Wall -lm -o $(NAME).$(ENDUNG)
 GTKFLAGS=-export-dynamic `pkg-config --cflags --libs gtk+-3.0`
 SRCS=main.cpp
 CC=g++
