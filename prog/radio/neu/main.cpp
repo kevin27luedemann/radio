@@ -208,6 +208,7 @@ static void button_play(GtkWidget *widget, gpointer data){
 	//system("/usr/scripte/wetter.sh");	
 	system("echo play");
 #endif
+	counter_off = 37;
 }	
 static void button_stop(GtkWidget *widget, gpointer data){
 #ifndef demo
@@ -216,6 +217,7 @@ static void button_stop(GtkWidget *widget, gpointer data){
 	system("echo stop");
 	gtk_widget_show(GTK_WIDGET(window_off1));
 #endif
+	counter_off = 37;
 }
 static void button_next(GtkWidget *widget, gpointer data){
 #ifndef demo
@@ -446,6 +448,7 @@ static gboolean update_datescreen(gpointer data){
 	//time tracking and screensaver
 	if(!NACHTS && ( local->tm_hour >= 23 || local->tm_hour<=5)){
 		NACHTS=true;
+/*
 		if(OFFSCREEN){
 			gtk_widget_hide(GTK_WIDGET(window_off1));
 #ifndef demo
@@ -454,9 +457,11 @@ static gboolean update_datescreen(gpointer data){
 #endif
 			gtk_widget_show(GTK_WIDGET(window_black));
 		}
+*/
 	}
 	else if(NACHTS && (local->tm_hour < 23 && local->tm_hour >5)){
 		NACHTS=false;
+/*
 		if(OFFSCREEN){
 			gtk_widget_show(GTK_WIDGET(window_off1));
 #ifndef demo
@@ -465,18 +470,23 @@ static gboolean update_datescreen(gpointer data){
 #endif
 			gtk_widget_hide(GTK_WIDGET(window_black));
 		}
+*/
 	}
-	if(!OFFSCREEN && NACHTS && counter_off >= 42){
+	if(!OFFSCREEN && counter_off >= 42){// && NACHTS){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
+/*
 #ifndef demo
 		BACKLIGHTAUS();
 #endif
+*/
 	}
+/*
 	else if(!OFFSCREEN && !NACHTS && counter_off >= 42){
 		OFFSCREEN = true;
 		gtk_widget_show(GTK_WIDGET(window_off1));
 	}
+*/
 
 
 	gtk_label_set_text(GTK_LABEL(label_date),asct(local,0));
