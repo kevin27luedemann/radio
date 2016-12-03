@@ -9,7 +9,9 @@ BMP180 druck;
 
 #include "DHT22.h"
 DHT22 dht22_I(15, PD2, &DDRD, &PORTD, INT0, ISC00, ISC01, INTF0, &EIMSK, &EICRA, &EIFR, CS21, &OCR2A, &TCNT2, &TCCR2B);
+//no correction because values goes beyond 100%
 DHT22 dht22_O(15, PD3, &DDRD, &PORTD, INT1, ISC10, ISC11, INTF1, &EIMSK, &EICRA, &EIFR, CS21, &OCR2A, &TCNT2, &TCCR2B);
+//DHT22 dht22_O(0, PD3, &DDRD, &PORTD, INT1, ISC10, ISC11, INTF1, &EIMSK, &EICRA, &EIFR, CS21, &OCR2A, &TCNT2, &TCCR2B);
 
 #define KONTUNUIRLICHER_MODUS 0
 #define SINGLE_MODUS 1
@@ -179,24 +181,26 @@ void send_weather(){
 	if(dht22_I.temperature_integral<0){
 		transmit_values('-');
 		transmit_values('0'+(-1)*dht22_I.temperature_integral/10);
+		transmit_values('0'+dht22_I.temperature_integral%10);
 	}
 	else{
 		transmit_values('+');
 		transmit_values('0'+dht22_I.temperature_integral/10);
+		transmit_values('0'+dht22_I.temperature_integral%10);
 	}
-	transmit_values('0'+dht22_I.temperature_integral%10);
 	transmit_values('.');
 	transmit_values('0'+dht22_I.temperature_decimal);
 	transmit_values('\t');
 	if(dht22_O.temperature_integral<0){
 		transmit_values('-');
 		transmit_values('0'+(-1)*dht22_O.temperature_integral/10);
+		transmit_values('0'+dht22_O.temperature_integral%10);
 	}
 	else{
 		transmit_values('+');
 		transmit_values('0'+dht22_O.temperature_integral/10);
+		transmit_values('0'+dht22_O.temperature_integral%10);
 	}
-	transmit_values('0'+dht22_O.temperature_integral%10);
 	transmit_values('.');
 	transmit_values('0'+dht22_O.temperature_decimal);
 	transmit_values('\t');
@@ -206,6 +210,9 @@ void send_weather(){
 	transmit_values('.');
 	transmit_values('0'+dht22_I.humidity_decimal);
 	transmit_values('\t');
+	if(dht22_O.humidity_integral>=100){
+		dht22_O.humidity_integral -= 15;
+	}
 	transmit_values('0'+dht22_O.humidity_integral/100); 
 	transmit_values('0'+dht22_O.humidity_integral/10); 
 	transmit_values('0'+dht22_O.humidity_integral%10);
