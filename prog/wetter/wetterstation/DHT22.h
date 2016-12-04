@@ -90,6 +90,7 @@ class DHT22
 {
 //Variablem
 public:
+	int8_t temperature_sign;
 	int8_t temperature_integral;
 	uint8_t temperature_decimal;
 	uint8_t humidity_integral;

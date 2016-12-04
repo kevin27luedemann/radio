@@ -128,6 +128,7 @@ DHT22::DHT22(int8_t offset, uint8_t DDRpin, volatile uint8_t *DHT22DDR, volatile
 	temperature_integral = 0;
 	humidity_decimal = 0;
 	humidity_integral = 0;
+	temperature_sign = 0;
 
 	/* Configuring DHT pin as output (initially) */
 	//*DHT22_DDR |= (1 << DHT22_PIN);
@@ -193,10 +194,12 @@ uint8_t DHT22::DHT22_CheckStatus(){
 				rawTemperature &= 0x7FFF; // Remove signal bit
 				temperature_integral = (int8_t)(rawTemperature / 10.0) * -1;
 				temperature_decimal = (uint8_t)(rawTemperature % 10);
+				temperature_sign = -1;
 			} else
 			{
 				temperature_integral = (int8_t)(rawTemperature / 10.0);
 				temperature_decimal = (uint8_t)(rawTemperature % 10);
+				temperature_sign = 1;
 			}
 			state = DHT_DATA_READY;
 		}

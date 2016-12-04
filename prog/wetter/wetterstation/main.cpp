@@ -178,7 +178,7 @@ void send_weather(){
 	while(status != dht22_O.DHT_DATA_READY && status != dht22_O.DHT_ERROR_NOT_RESPOND && status != dht22_O.DHT_ERROR_CHECKSUM){
 	status = dht22_O.DHT22_CheckStatus();
 	}
-	if(dht22_I.temperature_integral<0){
+	if(dht22_I.temperature_sign<0){
 		transmit_values('-');
 		transmit_values('0'-dht22_I.temperature_integral/10);
 		transmit_values('0'-dht22_I.temperature_integral%10);
@@ -191,7 +191,7 @@ void send_weather(){
 	transmit_values('.');
 	transmit_values('0'+dht22_I.temperature_decimal);
 	transmit_values('\t');
-	if(dht22_O.temperature_integral<0){
+	if(dht22_O.temperature_sign<0){
 		transmit_values('-');
 		transmit_values('0'-dht22_O.temperature_integral/10);
 		transmit_values('0'-dht22_O.temperature_integral%10);
