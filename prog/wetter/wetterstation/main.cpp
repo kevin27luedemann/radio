@@ -180,8 +180,8 @@ void send_weather(){
 	}
 	if(dht22_I.temperature_integral<0){
 		transmit_values('-');
-		transmit_values('0'+(-1)*dht22_I.temperature_integral/10);
-		transmit_values('0'+dht22_I.temperature_integral%10);
+		transmit_values('0'-dht22_I.temperature_integral/10);
+		transmit_values('0'-dht22_I.temperature_integral%10);
 	}
 	else{
 		transmit_values('+');
@@ -193,8 +193,8 @@ void send_weather(){
 	transmit_values('\t');
 	if(dht22_O.temperature_integral<0){
 		transmit_values('-');
-		transmit_values('0'+(-1)*dht22_O.temperature_integral/10);
-		transmit_values('0'+dht22_O.temperature_integral%10);
+		transmit_values('0'-dht22_O.temperature_integral/10);
+		transmit_values('0'-dht22_O.temperature_integral%10);
 	}
 	else{
 		transmit_values('+');
