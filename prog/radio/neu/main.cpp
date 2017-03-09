@@ -17,8 +17,8 @@
 #ifndef demo
 #define BUTTONBACKLIGHT		17
 #define BUTTONBLACKSCREEN	22
-#define BACKLIGHTAUS()  system("sudo sh -c 'echo '0' > /sys/class/gpio/gpio508/value'");
-#define BACKLIGHTAN()   system("sudo sh -c 'echo '1' > /sys/class/gpio/gpio508/value'");
+#define BACKLIGHTAUS()  system("sudo sh -c 'echo \"0\" > /sys/class/backlight/soc\\:backlight/brightness'");
+#define BACKLIGHTAN()   system("sudo sh -c 'echo \"0\" > /sys/class/backlight/soc\\:backlight/brightness'");
 #endif
 bool LICHTAN;
 bool OFFSCREEN;
@@ -61,14 +61,12 @@ int main(int argc, char* argv[])
 	pullUpDnControl(BUTTONBACKLIGHT,PUD_UP);
 	pinMode (BUTTONBLACKSCREEN, INPUT);
 	pullUpDnControl(BUTTONBLACKSCREEN,PUD_UP);
-	system("sudo sh -c 'echo 508 > /sys/class/gpio/export'");
-	system("sudo sh -c 'echo 'out' > /sys/class/gpio/gpio508/direction'");
 	BACKLIGHTAN();
 	LICHTAN 	= true;
 
 //	system("sudo /home/pi/.xinitrc");//Screen Blanking
 	system("sudo sh -c \"TERM=linux setterm -blank 0 >/dev/tty0\"");
-	system("mpc volume 97");	//set volume to best value
+	system("amixer set PCM 97%");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
 #endif
 	OFFSCREEN	= false;
