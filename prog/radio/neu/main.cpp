@@ -70,6 +70,8 @@ int main(int argc, char* argv[])
 
 //	system("sudo /home/pi/.xinitrc");//Screen Blanking
 	system("sudo sh -c \"TERM=linux setterm -blank 0 >/dev/tty0\"");
+	system("xset s off");
+	system("xset -dpms");
 	system("mpc volume 97");
 	//system("amixer set PCM 97%");	//set volume to best value
 	system("mpc repeat");		//turn repeating on
